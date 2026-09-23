@@ -1,0 +1,174 @@
+/*
+ * cards-product — "Best Sellers" product listing grid.
+ * Design migrated from https://www.compliancesigns.com/ (.home-best-seller).
+ * White bordered product cards on a light-gray band: product image on top,
+ * then title, a "From $X.XX" price line, and an outlined orange "Select
+ * Options" CTA pinned to the bottom of each card.
+ *
+ * Decorated EDS DOM (from decorate()):
+ *   .cards-product > ul > li
+ *     > .cards-product-image  (picture/img)
+ *     > .cards-product-body   (h3 title, p price, p.button-container > a.button)
+ */
+
+/* Light-gray band behind the cards (source: rgb(229,231,235) = #e5e7eb). */
+.cards-product {
+  background-color: #e5e7eb;
+  color: var(--text-color); /* #222 */
+  padding: 24px 16px;
+  margin: 0;
+}
+
+/* Section heading ("Best Sellers"): #374151, weight 500, left aligned. */
+.cards-product h2 {
+  margin: 0 0 16px;
+  color: #374151;
+  font-weight: 500;
+  text-transform: none;
+  text-align: left;
+}
+
+/* Grid: 1 col mobile, 2 col tablet, 3 col desktop; 16px gap (source gap 16px). */
+.cards-product ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* Card: white tile, 16px inner padding (source li padding 16px, white bg). */
+.cards-product li {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background-color: #fff;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+/* Product image, centered, contained; source rendered ~222px tall. */
+.cards-product .cards-product-image {
+  text-align: center;
+}
+
+.cards-product .cards-product-image picture,
+.cards-product .cards-product-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 222px;
+  object-fit: contain;
+}
+
+/* Card body: title, price, CTA stacked; CTA pinned to the bottom. */
+.cards-product .cards-product-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0 0;
+  text-align: left;
+}
+
+.cards-product .cards-product-body p {
+  margin: 0;
+}
+
+/* Price line ("From $X.XX"). Source: label 16px/400/#3d4644, amount 24px/700/#000. */
+.cards-product .cards-product-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.cards-product .cards-product-price-label {
+  color: #3d4644;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.cards-product .cards-product-price-amount {
+  color: #000;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Product title. Source: 18px, weight 500, #3d4644, 1.2 line-height. */
+.cards-product .cards-product-body h3 {
+  margin: 0;
+  color: #3d4644;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+.cards-product .cards-product-body h3 a {
+  display: inline;
+  overflow: visible;
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  white-space: normal;
+  text-overflow: clip;
+}
+
+/* Neutralize the global "a::after" chevron on both title and CTA links. */
+.cards-product .cards-product-body a::after,
+.cards-product .cards-product-body a.button::after {
+  content: none;
+}
+
+/* "Select Options" CTA: full-width outlined box, bold centered orange text.
+   Source: 1px solid #ccc box, 40px tall, color #f26822, weight 700. */
+.cards-product .cards-product-body .button-container {
+  margin: 0;
+  margin-top: auto;
+}
+
+.cards-product .cards-product-body a.button:any-link {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--main-accent-color); /* #e87511, source CTA #f26822 */
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 40px;
+  text-align: center;
+  text-decoration: none;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.cards-product .cards-product-body a.button:hover,
+.cards-product .cards-product-body a.button:focus {
+  border-color: var(--main-accent-color);
+  background-color: var(--main-accent-color);
+  color: var(--text-light);
+  text-decoration: none;
+}
+
+@media (width >= 600px) {
+  .cards-product ul {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 900px) {
+  .cards-product {
+    padding: 40px 0;
+  }
+
+  .cards-product ul {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

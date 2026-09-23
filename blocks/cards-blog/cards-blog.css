@@ -1,0 +1,60 @@
+/*
+ * cards-blog — editorial article grid.
+ * Structural/functional layout only.
+ * Topology: responsive multi-column grid; featured image on top, then
+ * title/excerpt/read-more stacked, read-more pinned to the bottom.
+ */
+
+.cards-blog ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.cards-blog li {
+  display: flex;
+  flex-direction: column;
+}
+
+.cards-blog .cards-blog-image picture,
+.cards-blog .cards-blog-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.cards-blog .cards-blog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+  flex: 1;
+}
+
+.cards-blog .cards-blog-body h2,
+.cards-blog .cards-blog-body h3,
+.cards-blog .cards-blog-body p {
+  margin: 0;
+}
+
+.cards-blog .cards-blog-body .button-container,
+.cards-blog .cards-blog-body a:last-child {
+  margin-top: auto;
+}
+
+@media (width >= 600px) {
+  .cards-blog ul {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 900px) {
+  .cards-blog ul {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

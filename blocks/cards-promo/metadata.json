@@ -1,0 +1,15 @@
+{
+  "variantName": "cards-promo",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "dark-overlay",
+    "imagePattern": "background",
+    "layout": "grid-1-large-plus-stacked",
+    "purpose": "promo-banner"
+  },
+  "contentPattern": "Repeating promotional tiles, each with a full-bleed background image and an overlaid heading, short description, and call-to-action label; the whole tile is clickable.",
+  "usage": "Top-of-page promotional banner grid (1 large tile + stacked smaller tiles).",
+  "options": [],
+  "memberVariantIds": ["cards-promo"]
+}

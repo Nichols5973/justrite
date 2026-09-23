@@ -1,0 +1,170 @@
+/*
+ * tabs-industry — "Industry Based Safety Signs & Labels" switcher.
+ * Visual design migrated from https://www.compliancesigns.com/ (.home-food-service).
+ * Values are exact computed styles from the source.
+ *
+ * Source design note: the ACTIVE tab is a filled dark-slate pill (rgb(55 65 81))
+ * with white text; inactive tabs are transparent with slate text. There is NO
+ * orange underline on the tab bar in the source — orange (brand accent) appears
+ * only on the panel's product-card CTAs. This matches the extracted computed
+ * styles (ground truth), which diverge from the verbal brief's "orange underline".
+ *
+ * Decorated DOM (from tabs-industry.js): the block builds
+ *   .tabs-industry
+ *     > .tabs-industry-list (role=tablist)  -> the tab bar (.tab-header in source)
+ *         > button.tabs-industry-tab        -> a tab trigger (.tab-trigger)
+ *     > .tabs-industry-panel                -> a switchable panel (featured tile + cards)
+ */
+
+/* --- Tab bar (source .tab-header) --- */
+.tabs-industry .tabs-industry-list {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  max-width: 100%;
+  margin: 0 0 24px;
+  padding: 0;
+  overflow-x: auto;
+}
+
+@media (width >= 900px) {
+  .tabs-industry .tabs-industry-list {
+    margin-bottom: 56px;
+  }
+}
+
+/* --- Tab trigger, inactive (source .tab-trigger) --- */
+.tabs-industry .tabs-industry-list button {
+  flex: 0 0 max-content;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  padding: 8px 16px;
+  background-color: transparent;
+  color: rgb(55 65 81);
+  font-family: var(--heading-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 19.2px;
+  text-transform: capitalize;
+  text-align: center;
+  text-overflow: unset;
+  overflow: unset;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tabs-industry .tabs-industry-list button p {
+  margin: 0;
+}
+
+.tabs-industry .tabs-industry-list button:hover {
+  color: var(--link-hover-color);
+}
+
+/* --- Tab trigger, active (source .tab-trigger.active): filled slate pill --- */
+.tabs-industry .tabs-industry-list button[aria-selected='true'] {
+  background-color: rgb(55 65 81);
+  color: rgb(255 255 255);
+  cursor: default;
+}
+
+.tabs-industry .tabs-industry-list button[aria-selected='true']:hover {
+  color: rgb(255 255 255);
+}
+
+/* --- Panel (source .tab-content): featured tile + product-card row --- */
+.tabs-industry .tabs-industry-panel {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
+.tabs-industry .tabs-industry-panel[aria-hidden='true'] {
+  display: none;
+}
+
+/*
+ * Panel content layout: the block JS (decorate) regroups the flat richtext run
+ * into a featured industry tile (.tabs-industry-featured) followed by product
+ * cards (.tabs-industry-card), all inside a .tabs-industry-cards row. Source
+ * layout: featured tile on the left (~270px) with product cards to the right.
+ */
+
+/* Mobile-first: stack featured tile + cards vertically */
+.tabs-industry .tabs-industry-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Each card stacks its image / price / title / CTA */
+.tabs-industry .tabs-industry-card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.tabs-industry .tabs-industry-card > p,
+.tabs-industry .tabs-industry-card > h3 {
+  margin: 0 0 8px;
+}
+
+/* Titles/links wrap within their card (override the global link nowrap/ellipsis) */
+.tabs-industry .tabs-industry-card h3,
+.tabs-industry .tabs-industry-card a {
+  display: block;
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+/* Neutralize the global chevron ::after on card links */
+.tabs-industry .tabs-industry-card a::after {
+  content: none;
+}
+
+.tabs-industry .tabs-industry-card picture,
+.tabs-industry .tabs-industry-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Desktop: featured tile + product cards side-by-side */
+@media (width >= 900px) {
+  .tabs-industry .tabs-industry-cards {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  /* Featured industry tile: fixed ~270px column (mirrors source) */
+  .tabs-industry .tabs-industry-featured {
+    flex: 0 0 270px;
+    min-width: 0;
+  }
+
+  /* Product cards: share the remaining width equally; min-width:0 lets them
+     shrink so the row never overflows the container. */
+  .tabs-industry .tabs-industry-card:not(.tabs-industry-featured) {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  /* Cap product-card image height so tall signage doesn't blow out the row */
+  .tabs-industry .tabs-industry-card:not(.tabs-industry-featured) img {
+    max-height: 200px;
+    width: auto;
+    max-width: 100%;
+  }
+}
+
+/* CTA links use the brand accent (source orange) */
+.tabs-industry .tabs-industry-panel a {
+  color: var(--main-accent-color);
+  font-weight: 700;
+}

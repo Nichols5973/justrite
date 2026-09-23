@@ -13,6 +13,12 @@
       "button",
       "button",
       "cards",
+      "cards-promo",
+      "cards-category",
+      "cards-product",
+      "cards-review",
+      "cards-blog",
+      "cards-value",
       "carousel",
       "columns",
       "contentfragment",
@@ -31,6 +37,7 @@
       "search",
       "separator",
       "tabs",
+      "tabs-industry",
       "teaser",
       "text",
       "title",
@@ -42,6 +49,48 @@
     "id": "cards",
     "components": [
       "card"
+    ]
+  },
+  {
+    "id": "cards-promo",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "cards-category",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "cards-product",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "cards-review",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "cards-blog",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "cards-value",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "tabs-industry",
+    "components": [
+      "tabs-industry-item"
     ]
   },
   {

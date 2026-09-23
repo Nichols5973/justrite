@@ -11,38 +11,38 @@
       "accordion",
       "action-button",
       "button",
+      "button",
       "cards",
+      "cards-promo",
+      "cards-category",
+      "cards-product",
+      "cards-review",
+      "cards-blog",
+      "cards-value",
       "carousel",
       "columns",
       "contentfragment",
       "download-list",
+      "dm-asset",
       "dm-template",
-      "dynamic-media-image",
-      "dynamic-media-video",
+      "embed-adaptive-form",
+      "find-a-doctor",
+      "forex",
+      "form",
       "fragment",
       "hero",
       "image",
       "promotion",
       "quote",
+      "search",
+      "separator",
+      "tabs",
+      "tabs-industry",
       "teaser",
       "text",
       "title",
       "title-block",
-      "video",
-      "search",
-      "separator",
-      "tabs",
-      "form",
-      "forex",
-      "embed-adaptive-form",
-      "find-a-doctor",
-      "fragment-list"
-    ]
-  },
-  {
-    "id": "accordion",
-    "components": [
-      "accordion-item"
+      "video"
     ]
   },
   {
@@ -52,9 +52,45 @@
     ]
   },
   {
-    "id": "carousel",
+    "id": "cards-promo",
     "components": [
       "card"
+    ]
+  },
+  {
+    "id": "cards-category",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "cards-product",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "cards-review",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "cards-blog",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "cards-value",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "tabs-industry",
+    "components": [
+      "tabs-industry-item"
     ]
   },
   {
@@ -67,48 +103,13 @@
     "id": "column",
     "components": [
       "button",
+      "dm-asset",
+      "dm-template",
       "image",
       "text",
       "title",
       "title-block",
-      "video",
-      "dynamic-media-video"
-    ]
-  },
-  {
-    "id": "tabs",
-    "components": [
-      "tabs-item"
-    ]
-  },
-  {
-    "id": "form",
-    "components": [
-      "captcha",
-      "checkbox",
-      "checkbox-group",
-      "date-input",
-      "drop-down",
-      "email",
-      "file-input",
-      "form-accordion",
-      "form-button",
-      "form-fragment",
-      "form-image",
-      "form-modal",
-      "form-reset-button",
-      "form-submit-button",
-      "number-input",
-      "panel",
-      "password",
-      "plain-text",
-      "radio-group",
-      "rating",
-      "telephone-input",
-      "text-input",
-      "tnc",
-      "wizard",
-      "range"
+      "video"
     ]
   }
 ]

@@ -1,0 +1,102 @@
+/*
+ * cards-category — "Shop by Category" grid (compliancesigns.com).
+ * Dense multi-column grid of compact tiles: centered thumbnail image
+ * above a short category label link. Values extracted from source
+ * computed styles; see migration-work/cards-category-extracted.css.
+ */
+
+.cards-category ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.cards-category li {
+  margin: 0;
+}
+
+/* Tile anchor wraps image + label */
+.cards-category .cards-category-link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+  overflow: visible;
+  white-space: normal;
+}
+
+/* Suppress the global link chevron on the tile anchor */
+.cards-category .cards-category-link::after {
+  content: none;
+}
+
+/* Image */
+.cards-category .cards-category-image {
+  margin: 0;
+}
+
+.cards-category .cards-category-image p {
+  margin: 0;
+}
+
+.cards-category .cards-category-image picture,
+.cards-category .cards-category-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border: none;
+  border-radius: 0;
+}
+
+/* Label */
+.cards-category .cards-category-label {
+  margin: 12px 0 0;
+  text-align: center;
+}
+
+.cards-category .cards-category-label p {
+  margin: 0;
+}
+
+.cards-category .cards-category-label a,
+.cards-category .cards-category-label a:any-link {
+  display: block;
+  color: rgb(61 70 68);
+  font-family: var(--body-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* Suppress the global link chevron on the label link */
+.cards-category .cards-category-label a::after {
+  content: none;
+}
+
+.cards-category .cards-category-label a:hover,
+.cards-category .cards-category-link:hover .cards-category-label a {
+  color: var(--link-hover-color);
+  text-decoration: none;
+}
+
+@media (width >= 900px) {
+  .cards-category ul {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 40px 16px;
+  }
+
+  .cards-category .cards-category-label a,
+  .cards-category .cards-category-label a:any-link {
+    font-size: 24px;
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "variantName": "cards-blog",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "imagePattern": "featured-image",
+    "density": "standard",
+    "purpose": "blog-listing"
+  },
+  "contentPattern": "Editorial article cards, each with a featured image, title, short excerpt, and read-more link.",
+  "usage": "News & resources blog listing grid.",
+  "options": [],
+  "memberVariantIds": ["cards-blog"]
+}

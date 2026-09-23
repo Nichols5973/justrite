@@ -1,0 +1,14 @@
+{
+  "variantName": "tabs-industry",
+  "baseBlock": "tabs",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "layout": "horizontal-tab-bar",
+    "purpose": "industry-switcher"
+  },
+  "contentPattern": "A horizontal tab bar switching panels; each panel shows a featured industry tile plus a row of product cards.",
+  "usage": "Industry-based product switcher (Manufacturing, Construction, Transportation, Food & Beverage).",
+  "options": [],
+  "memberVariantIds": ["tabs-industry"]
+}

@@ -1,0 +1,32 @@
+:root {
+  /* Fonts — ComplianceSigns uses a Helvetica Neue system stack (no webfont) */
+  --heading-font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+  --body-font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+
+  /* Colors */
+  --background-color: #fff;
+  --text-color: #222;
+  --link-color: #5b7d95;
+  --link-hover-color: #e87511;
+
+  /* Brand palette */
+  --brand-accent: #e87511;
+  --brand-accent-hover: #cf6608;
+  --brand-navy: #003b5c;
+  --brand-navy-dark: #002d4c;
+  --light-color: #f4f6f8;
+  --dark-color: #002d4c;
+
+  /* Spacing */
+  --section-padding: 40px;
+  --content-max-width: 1280px;
+  --nav-height: 64px;
+
+  /* Heading sizes */
+  --heading-size-xxl: 40px;
+  --heading-size-xl: 32px;
+  --heading-size-l: 24px;
+  --heading-size-m: 20px;
+  --heading-size-s: 18px;
+  --heading-size-xs: 16px;
+}

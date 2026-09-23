@@ -1,0 +1,187 @@
+{
+  "metadata": {
+    "projectType": "xwalk"
+  },
+  "templates": [
+    {
+      "name": "home",
+      "urls": [
+        "https://www.compliancesigns.com/"
+      ],
+      "representativeUrl": "https://www.compliancesigns.com/",
+      "description": "Compliance Signs homepage",
+      "urlPattern": "/",
+      "blocks": [
+        {
+          "name": "cards-promo",
+          "instances": [
+            ".home-banner-section .banner-desktop",
+            ".home-banner-section"
+          ]
+        },
+        {
+          "name": "cards-category",
+          "instances": [
+            ".home-shop-category .container-xl",
+            ".home-shop-category"
+          ]
+        },
+        {
+          "name": "cards-product",
+          "instances": [
+            ".home-best-seller .container-xl",
+            ".home-best-seller"
+          ]
+        },
+        {
+          "name": "tabs-industry",
+          "instances": [
+            ".home-food-service .container-xl",
+            ".home-food-service"
+          ]
+        },
+        {
+          "name": "cards-review",
+          "instances": [
+            ".home-customer-review .review-right",
+            ".home-customer-review .container-xl",
+            ".home-customer-review"
+          ]
+        },
+        {
+          "name": "cards-blog",
+          "instances": [
+            ".home-lastest-blogs .blogs",
+            ".home-lastest-blogs .container-xl",
+            ".home-lastest-blogs"
+          ]
+        },
+        {
+          "name": "cards-value",
+          "instances": [
+            ".home-why-csign .container-xl",
+            ".home-why-csign"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "rc3",
+          "name": "Promotional banner grid",
+          "selector": [
+            ".home-banner-section"
+          ],
+          "style": null,
+          "blocks": [
+            "cards-promo"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc4",
+          "name": "Shop by Category",
+          "selector": [
+            ".home-shop-category"
+          ],
+          "style": "light",
+          "blocks": [
+            "cards-category"
+          ],
+          "defaultContent": [
+            ".home-shop-category h1",
+            ".home-shop-category h2"
+          ]
+        },
+        {
+          "id": "rc5",
+          "name": "Best Sellers",
+          "selector": [
+            ".home-best-seller"
+          ],
+          "style": "light",
+          "blocks": [
+            "cards-product"
+          ],
+          "defaultContent": [
+            ".home-best-seller h2"
+          ]
+        },
+        {
+          "id": "rc6",
+          "name": "Industry-based products",
+          "selector": [
+            ".home-food-service"
+          ],
+          "style": "light",
+          "blocks": [
+            "tabs-industry"
+          ],
+          "defaultContent": [
+            ".home-food-service h2"
+          ]
+        },
+        {
+          "id": "rc7",
+          "name": "Customer reviews",
+          "selector": [
+            ".home-customer-review"
+          ],
+          "style": "navy-blue",
+          "blocks": [
+            "cards-review"
+          ],
+          "defaultContent": [
+            ".home-customer-review .review-left h2",
+            ".home-customer-review .review-left p",
+            ".home-customer-review .review-left a"
+          ]
+        },
+        {
+          "id": "rc8",
+          "name": "News & Resources",
+          "selector": [
+            ".home-lastest-blogs"
+          ],
+          "style": "light",
+          "blocks": [
+            "cards-blog"
+          ],
+          "defaultContent": [
+            ".home-lastest-blogs h2",
+            ".home-lastest-blogs .blog-left a"
+          ]
+        },
+        {
+          "id": "rc9",
+          "name": "Newsletter signup",
+          "selector": [
+            ".home-sign-up"
+          ],
+          "style": "dark",
+          "blocks": [
+            "form"
+          ],
+          "defaultContent": [
+            ".home-sign-up h2",
+            ".home-sign-up p"
+          ]
+        },
+        {
+          "id": "rc10",
+          "name": "Why ComplianceSigns",
+          "selector": [
+            ".home-why-csign"
+          ],
+          "style": "light",
+          "blocks": [
+            "cards-value"
+          ],
+          "defaultContent": [
+            ".home-why-csign h2",
+            ".home-why-csign .sub-title"
+          ]
+        }
+      ]
+    }
+  ]
+}

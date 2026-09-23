@@ -1,0 +1,108 @@
+/*
+ * cards-review — customer testimonial cards.
+ *
+ * Three white testimonial cards in a row, sitting on the navy-blue review
+ * section (.section.navy-blue → #002d4c). Each card is text-only: a star
+ * rating, a headline, a quote, and the reviewer name.
+ *
+ * Source note: on compliancesigns.com the Trustpilot review-card slider is
+ * disabled (showTrustPilot:false), so the cards do not render in the live DOM
+ * and no per-card computed styles exist to extract. The section background,
+ * heading (white, weight 500), intro text (white) and orange CTA WERE
+ * extracted from source and drive the surrounding treatment; the white cards
+ * are built to read cleanly on that navy field using established brand tokens
+ * (--dark-color #002d4c, --main-accent-color #e87511, --text-color #222).
+ *
+ * Decorated DOM (from blocks/cards-review/cards-review.js):
+ *   .cards-review > ul > li > .cards-review-body  (one body cell per card,
+ *   stacking rating / headline / quote / reviewer as paragraphs + heading)
+ */
+
+.cards-review ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.cards-review li {
+  display: flex;
+}
+
+.cards-review .cards-review-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 24px;
+  background-color: #fff;
+  color: var(--text-color); /* #222 */
+  border-radius: var(--border-radius-base); /* 4px */
+  box-shadow: 0 4px 16px rgb(0 0 0 / 18%);
+  text-align: left;
+}
+
+.cards-review .cards-review-body p,
+.cards-review .cards-review-body h2,
+.cards-review .cards-review-body h3,
+.cards-review .cards-review-body h4 {
+  margin: 0;
+}
+
+/* Quote body (base paragraph — declared before the positional overrides) */
+.cards-review .cards-review-body p {
+  color: var(--text-color); /* #222 — self-contained, never inherits section white */
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Star rating — first paragraph of each card renders as the rating line */
+.cards-review .cards-review-body p:first-child {
+  color: var(--main-accent-color); /* #e87511 */
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 2px;
+}
+
+/* Headline */
+.cards-review .cards-review-body h2,
+.cards-review .cards-review-body h3,
+.cards-review .cards-review-body h4 {
+  color: var(--dark-color); /* #002d4c */
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+/* Reviewer name — last paragraph, emphasised */
+.cards-review .cards-review-body p:last-child {
+  margin-top: 4px;
+  color: var(--dark-color);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Links inside a card keep the brand link colour, no button chrome */
+.cards-review .cards-review-body a,
+.cards-review .cards-review-body a:any-link {
+  color: var(--link-color);
+  font-size: inherit;
+  white-space: normal;
+}
+
+.cards-review .cards-review-body a:hover {
+  color: var(--link-hover-color);
+}
+
+@media (width >= 900px) {
+  .cards-review ul {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .cards-review .cards-review-body {
+    padding: 28px;
+  }
+}
