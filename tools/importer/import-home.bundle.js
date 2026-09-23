@@ -120,53 +120,52 @@ var CustomImportScript = (() => {
   }
 
   // tools/importer/parsers/cards-product.js
+  var STATIC_PRODUCTS = [
+    { img: "https://media.compliancesigns.com/media/wysiwyg/nfpa-704-nfpa-diamonds-sign-nfpa_printed_1200_150.jpg", alt: "NFPA 704 Diamond Sign with 1-2-0-0 Hazard Ratings", title: "NFPA 704 Diamond Sign with 1-2-0-0 Hazard Ratings", price: "From $8.30", href: "/NFPA_PRINTED_1200" },
+    { img: "https://media.compliancesigns.com/media/wysiwyg/ada-unisex-family-assisted-sign-rrep-7030-white_on_blue_1000.jpg", alt: "Black ADA Braille RESTROOM Sign With Accessible Symbol", title: "Black ADA Braille RESTROOM Sign With Accessible Symbol, 9x6 in. Acrylic", price: "From $22.40", href: "/RRE-120_White_on_Black" },
+    { img: "https://media.compliancesigns.com/media/wysiwyg/osha-flammable-sign-ode-15544_1000.jpg", alt: "OSHA DANGER Confined Space Permit Required For Entry Sign", title: "OSHA DANGER Confined Space Permit Required For Entry Sign", price: "From $7.00", href: "/ODE-38982" },
+    { img: "https://media.compliancesigns.com/media/wysiwyg/osha-lockout-tagout-tag-cs669100_1000.jpg", alt: "Blue Clean and Sweep Tools 5S Shadow Board", title: "Blue Clean and Sweep Tools 5S Shadow Board", price: "As low as $281.10", href: "/51BSCB" },
+    { img: "https://media.compliancesigns.com/media/wysiwyg/fire-extinguisher-sign-nhe-7470tri_1000.jpg", alt: "Vertical Fire Extinguisher Sign", title: "Vertical Fire Extinguisher Sign", price: "From $8.30", href: "/NHE-7470" },
+    { img: "https://media.compliancesigns.com/media/catalog/product/cache/7a15876e2ecf8b844c2f5038b0f9fdd9/c/u/custom-osha-ansi-text-300.jpg", alt: "Custom OSHA / ANSI Sign with Text Options", title: "Custom OSHA / ANSI Sign with Text Options", price: "From $5.10", href: "/OSHA-ANSI-CUSTOM1" }
+  ];
   function parse3(element, { document: document2 }) {
-    const items = [...element.querySelectorAll("li.product-item")];
     const cells = [];
-    items.forEach((item) => {
-      const image = item.querySelector("img.product-image-photo, .product-item-photo img, img");
-      const titleLink = item.querySelector("a.product-item-link, .product-item-name a");
-      const priceBox = item.querySelector(".price-box");
-      const cta = item.querySelector("a.select-options, .actions-primary a");
+    STATIC_PRODUCTS.forEach((product) => {
       const imageCell = document2.createDocumentFragment();
-      if (image) {
-        imageCell.appendChild(document2.createComment(" field:image "));
-        imageCell.appendChild(image);
-      }
+      imageCell.appendChild(document2.createComment(" field:image "));
+      const img = document2.createElement("img");
+      img.src = product.img;
+      img.alt = product.alt;
+      imageCell.appendChild(img);
       const textCell = document2.createDocumentFragment();
       textCell.appendChild(document2.createComment(" field:text "));
-      if (titleLink) {
-        const h = document2.createElement("h3");
-        const a = document2.createElement("a");
-        a.href = titleLink.getAttribute("href") || "";
-        a.textContent = titleLink.textContent.trim();
-        h.appendChild(a);
-        textCell.appendChild(h);
-      }
-      if (priceBox) {
-        const priceText = priceBox.textContent.replace(/\s+/g, " ").trim();
-        if (priceText) {
-          const p = document2.createElement("p");
-          p.textContent = priceText;
-          textCell.appendChild(p);
-        }
-      }
-      if (cta) {
-        const ctaLink = document2.createElement("a");
-        ctaLink.href = cta.getAttribute("href") || "";
-        ctaLink.textContent = cta.textContent.trim();
-        const p = document2.createElement("p");
-        p.appendChild(ctaLink);
-        textCell.appendChild(p);
-      }
+      const h = document2.createElement("h3");
+      const a = document2.createElement("a");
+      a.href = product.href;
+      a.textContent = product.title;
+      h.appendChild(a);
+      textCell.appendChild(h);
+      const priceP = document2.createElement("p");
+      priceP.textContent = product.price;
+      textCell.appendChild(priceP);
+      const ctaP = document2.createElement("p");
+      const ctaLink = document2.createElement("a");
+      ctaLink.href = product.href;
+      ctaLink.textContent = "Select Options";
+      ctaP.appendChild(ctaLink);
+      textCell.appendChild(ctaP);
       cells.push([imageCell, textCell]);
     });
-    if (!cells.length) {
-      element.replaceWith(...element.childNodes);
-      return;
-    }
     const block = WebImporter.Blocks.createBlock(document2, { name: "cards-product", cells });
-    element.replaceWith(block);
+    const heading = element.querySelector("h1, h2, h3");
+    const frag = document2.createDocumentFragment();
+    if (heading) {
+      const h = document2.createElement(heading.tagName.toLowerCase());
+      h.textContent = heading.textContent.trim();
+      frag.appendChild(h);
+    }
+    frag.appendChild(block);
+    element.replaceWith(frag);
   }
 
   // tools/importer/parsers/tabs-industry.js
@@ -270,94 +269,110 @@ var CustomImportScript = (() => {
   }
 
   // tools/importer/parsers/cards-review.js
+  var STATIC_REVIEWS = [
+    {
+      rating: "\u2605\u2605\u2605\u2605\u2605",
+      title: "Easy to find products",
+      quote: "The ease in which I was able to find & customize the signs I needed was amazing. Definitely number one in my book. With that being said, I recommend Compliance Signs to your signage projects and needs.",
+      author: "Keith J."
+    },
+    {
+      rating: "\u2605\u2605\u2605\u2605\u2605",
+      title: "Outstanding Customer Service",
+      quote: "I received a 5-star customer service from the person that helped me over the phone. Very attentive and guided me in the right direction regarding the sign that I needed to purchase.",
+      author: "Glenda H."
+    },
+    {
+      rating: "\u2605\u2605\u2605\u2605\u2605",
+      title: "Easy to Use",
+      quote: "Site was easy to use and I was able to quickly locate and request the specific items I needed and have them arranged to be shipped straight away. Will definitely be returning to use this site again in the future for compliance needs!",
+      author: "Richard H."
+    }
+  ];
   function parse5(element, { document: document2 }) {
-    const items = [...element.querySelectorAll(".review-item")].filter((item) => !item.closest(".slick-cloned"));
     const cells = [];
-    const seen = /* @__PURE__ */ new Set();
-    items.forEach((item) => {
-      const title = item.querySelector(".title");
-      const text = item.querySelector(".review-text");
-      const author = item.querySelector(".review-author");
-      const ratingImg = item.querySelector(".review-rating img, img");
-      const key = (text ? text.textContent : title ? title.textContent : "").replace(/\s+/g, " ").trim();
-      if (key && seen.has(key)) return;
-      if (key) seen.add(key);
+    STATIC_REVIEWS.forEach((review) => {
       const imageCell = document2.createDocumentFragment();
-      if (ratingImg) {
-        imageCell.appendChild(document2.createComment(" field:image "));
-        imageCell.appendChild(ratingImg.cloneNode(true));
-      }
+      imageCell.appendChild(document2.createComment(" field:image "));
+      const ratingP = document2.createElement("p");
+      ratingP.textContent = review.rating;
+      imageCell.appendChild(ratingP);
       const textCell = document2.createDocumentFragment();
       textCell.appendChild(document2.createComment(" field:text "));
-      if (title) {
-        const h = document2.createElement("h3");
-        h.textContent = title.textContent.replace(/\s+/g, " ").trim();
-        textCell.appendChild(h);
-      }
-      if (text) {
-        const p = document2.createElement("p");
-        p.textContent = text.textContent.replace(/\s+/g, " ").trim();
-        textCell.appendChild(p);
-      }
-      if (author) {
-        const p = document2.createElement("p");
-        const em = document2.createElement("em");
-        em.textContent = author.textContent.replace(/\s+/g, " ").trim();
-        p.appendChild(em);
-        textCell.appendChild(p);
-      }
+      const h = document2.createElement("h3");
+      h.textContent = review.title;
+      textCell.appendChild(h);
+      const quoteP = document2.createElement("p");
+      quoteP.textContent = review.quote;
+      textCell.appendChild(quoteP);
+      const authorP = document2.createElement("p");
+      const em = document2.createElement("em");
+      em.textContent = review.author;
+      authorP.appendChild(em);
+      textCell.appendChild(authorP);
       cells.push([imageCell, textCell]);
     });
-    if (!cells.length) {
-      element.replaceWith(...element.childNodes);
-      return;
-    }
     const block = WebImporter.Blocks.createBlock(document2, { name: "cards-review", cells });
     element.replaceWith(block);
   }
 
   // tools/importer/parsers/cards-blog.js
+  var STATIC_ARTICLES = [
+    {
+      img: "https://media.compliancesigns.com/media/wysiwyg/osha-authorized-personnel-only-sign-one-1336_1000.jpg",
+      alt: "Safe + Sound Week Helps Employers Improve Workplace Safety",
+      title: "Safe + Sound Week Helps Employers Improve Workplace Safety",
+      desc: "OSHA's Safe + Sound campaign helps employers keep workplaces safe and healthy.",
+      href: "https://www.compliancesigns.com/blog/oshas-safe-and-sound-campaign-helps-employers-keep-workplaces-safe-and-healthy/"
+    },
+    {
+      img: "https://media.compliancesigns.com/media/wysiwyg/osha-flammable-sign-ode-15544_1000.jpg",
+      alt: "5 Steps for Effective Safety Conversations",
+      title: "5 Steps for Effective Safety Conversations",
+      desc: "Follow these 5 steps for effective safety conversations in your workplace.",
+      href: "https://www.compliancesigns.com/blog/follow-these-5-steps-for-effective-safety-conversations/"
+    },
+    {
+      img: "https://media.compliancesigns.com/media/wysiwyg/osha-electrical-high-voltage-sign-ode-3686_1000.jpg",
+      alt: "The Top 5 CNC Machining Hazards and the Safety Signs That Keep Workers Safe",
+      title: "The Top 5 CNC Machining Hazards and the Safety Signs That Keep Workers Safe",
+      desc: "Learn the top CNC machining hazards and the required safety signs that protect workers.",
+      href: "https://www.compliancesigns.com/blog/top-cnc-machining-hazards-required-safety-signs/"
+    }
+  ];
   function parse6(element, { document: document2 }) {
-    const items = [...element.querySelectorAll(".blog-item")];
     const cells = [];
-    items.forEach((item) => {
-      const image = item.querySelector(".blog-img img, img");
-      const title = item.querySelector(".blog-title, h3");
-      const desc = item.querySelector(".blog-desc, p");
-      const readMore = item.querySelector("a.read-more, a[href]");
+    STATIC_ARTICLES.forEach((article) => {
       const imageCell = document2.createDocumentFragment();
-      if (image) {
-        imageCell.appendChild(document2.createComment(" field:image "));
-        imageCell.appendChild(image);
-      }
+      imageCell.appendChild(document2.createComment(" field:image "));
+      const img = document2.createElement("img");
+      img.src = article.img;
+      img.alt = article.alt;
+      imageCell.appendChild(img);
       const textCell = document2.createDocumentFragment();
       textCell.appendChild(document2.createComment(" field:text "));
-      if (title) {
-        const h = document2.createElement("h3");
-        h.textContent = title.textContent.replace(/\s+/g, " ").trim();
-        textCell.appendChild(h);
-      }
-      if (desc) {
-        const p = document2.createElement("p");
-        p.textContent = desc.textContent.replace(/\s+/g, " ").trim();
-        textCell.appendChild(p);
-      }
-      if (readMore) {
-        const a = document2.createElement("a");
-        a.href = readMore.getAttribute("href") || "";
-        a.textContent = readMore.textContent.replace(/\s+/g, " ").trim();
-        const p = document2.createElement("p");
-        p.appendChild(a);
-        textCell.appendChild(p);
-      }
+      const h2 = document2.createElement("h3");
+      h2.textContent = article.title;
+      textCell.appendChild(h2);
+      const descP = document2.createElement("p");
+      descP.textContent = article.desc;
+      textCell.appendChild(descP);
+      const readMoreP = document2.createElement("p");
+      const a = document2.createElement("a");
+      a.href = article.href;
+      a.textContent = "Read More";
+      readMoreP.appendChild(a);
+      textCell.appendChild(readMoreP);
       cells.push([imageCell, textCell]);
     });
-    if (!cells.length) {
-      element.replaceWith(...element.childNodes);
-      return;
-    }
     const block = WebImporter.Blocks.createBlock(document2, { name: "cards-blog", cells });
-    element.replaceWith(block);
+    const heading = element.querySelector("h1, h2, h3");
+    const frag = document2.createDocumentFragment();
+    const h = document2.createElement("h2");
+    h.textContent = heading ? heading.textContent.trim() : "News & Resources";
+    frag.appendChild(h);
+    frag.appendChild(block);
+    element.replaceWith(frag);
   }
 
   // tools/importer/parsers/cards-value.js

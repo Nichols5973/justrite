@@ -5,67 +5,66 @@
  * Source: https://www.compliancesigns.com/ (.home-customer-review)
  * Generated for xwalk project (field hints per card model: image, text).
  *
- * Source structure: .review-right holds a slick slider of .review-item cards,
- * each with a rating image, a .title headline, a .review-text quote, and a
- * .review-author name. Iterate the stable .review-item wrappers. The .review-left
- * intro (heading + "View All Reviews" CTA) is section-level content, not a card.
+ * The source review slider is powered by a Trustpilot widget that is disabled
+ * at render time (showTrustPilot:false), so no cards exist in static HTML. Per
+ * project decision, this block ships a CURATED STATIC set of the verified
+ * testimonials shown on the source page so the section is complete. The
+ * "Reviews Are In" intro heading is section-level default content (imported
+ * separately); this block only emits the review cards.
  * cards (container) block: one row per review [image cell, text cell].
  */
+const STATIC_REVIEWS = [
+  {
+    rating: '★★★★★',
+    title: 'Easy to find products',
+    quote: 'The ease in which I was able to find & customize the signs I needed was amazing. Definitely number one in my book. With that being said, I recommend Compliance Signs to your signage projects and needs.',
+    author: 'Keith J.',
+  },
+  {
+    rating: '★★★★★',
+    title: 'Outstanding Customer Service',
+    quote: 'I received a 5-star customer service from the person that helped me over the phone. Very attentive and guided me in the right direction regarding the sign that I needed to purchase.',
+    author: 'Glenda H.',
+  },
+  {
+    rating: '★★★★★',
+    title: 'Easy to Use',
+    quote: 'Site was easy to use and I was able to quickly locate and request the specific items I needed and have them arranged to be shipped straight away. Will definitely be returning to use this site again in the future for compliance needs!',
+    author: 'Richard H.',
+  },
+];
+
 export default function parse(element, { document }) {
-  // Only real slides (skip slick clones, which carry a slick-cloned class).
-  const items = [...element.querySelectorAll('.review-item')]
-    .filter((item) => !item.closest('.slick-cloned'));
-
   const cells = [];
-  const seen = new Set();
 
-  items.forEach((item) => {
-    const title = item.querySelector('.title');
-    const text = item.querySelector('.review-text');
-    const author = item.querySelector('.review-author');
-    const ratingImg = item.querySelector('.review-rating img, img');
-
-    // De-dupe on quote text in case the slider markup repeats a slide.
-    const key = (text ? text.textContent : title ? title.textContent : '').replace(/\s+/g, ' ').trim();
-    if (key && seen.has(key)) return;
-    if (key) seen.add(key);
-
-    // Image cell (field:image) — the star rating graphic.
+  STATIC_REVIEWS.forEach((review) => {
+    // Image cell (field:image) — star rating rendered as text.
     const imageCell = document.createDocumentFragment();
-    if (ratingImg) {
-      imageCell.appendChild(document.createComment(' field:image '));
-      imageCell.appendChild(ratingImg.cloneNode(true));
-    }
+    imageCell.appendChild(document.createComment(' field:image '));
+    const ratingP = document.createElement('p');
+    ratingP.textContent = review.rating;
+    imageCell.appendChild(ratingP);
 
     // Text cell (field:text) — headline, quote, and reviewer name.
     const textCell = document.createDocumentFragment();
     textCell.appendChild(document.createComment(' field:text '));
-    if (title) {
-      const h = document.createElement('h3');
-      h.textContent = title.textContent.replace(/\s+/g, ' ').trim();
-      textCell.appendChild(h);
-    }
-    if (text) {
-      const p = document.createElement('p');
-      p.textContent = text.textContent.replace(/\s+/g, ' ').trim();
-      textCell.appendChild(p);
-    }
-    if (author) {
-      const p = document.createElement('p');
-      const em = document.createElement('em');
-      em.textContent = author.textContent.replace(/\s+/g, ' ').trim();
-      p.appendChild(em);
-      textCell.appendChild(p);
-    }
+
+    const h = document.createElement('h3');
+    h.textContent = review.title;
+    textCell.appendChild(h);
+
+    const quoteP = document.createElement('p');
+    quoteP.textContent = review.quote;
+    textCell.appendChild(quoteP);
+
+    const authorP = document.createElement('p');
+    const em = document.createElement('em');
+    em.textContent = review.author;
+    authorP.appendChild(em);
+    textCell.appendChild(authorP);
 
     cells.push([imageCell, textCell]);
   });
-
-  // Empty-block guard.
-  if (!cells.length) {
-    element.replaceWith(...element.childNodes);
-    return;
-  }
 
   const block = WebImporter.Blocks.createBlock(document, { name: 'cards-review', cells });
   element.replaceWith(block);
