@@ -391,9 +391,9 @@ var CustomImportScript = (() => {
       const textCell = document2.createDocumentFragment();
       textCell.appendChild(document2.createComment(" field:text "));
       if (heading) {
-        const h = document2.createElement("h3");
-        h.textContent = heading.textContent.replace(/\s+/g, " ").trim();
-        textCell.appendChild(h);
+        const h2 = document2.createElement("h3");
+        h2.textContent = heading.textContent.replace(/\s+/g, " ").trim();
+        textCell.appendChild(h2);
       }
       if (desc) {
         const p = document2.createElement("p");
@@ -407,7 +407,17 @@ var CustomImportScript = (() => {
       return;
     }
     const block = WebImporter.Blocks.createBlock(document2, { name: "cards-value", cells });
-    element.replaceWith(block);
+    const frag = document2.createDocumentFragment();
+    const srcHeading = element.querySelector("h2, h1");
+    const h = document2.createElement("h2");
+    h.textContent = srcHeading ? srcHeading.textContent.replace(/\s+/g, " ").trim() : "Why ComplianceSigns?";
+    frag.appendChild(h);
+    const srcSub = element.querySelector(".sub-title");
+    const sub = document2.createElement("p");
+    sub.textContent = srcSub ? srcSub.textContent.replace(/\s+/g, " ").trim() : "Quality you can trust. In our products. In our people. In every order";
+    frag.appendChild(sub);
+    frag.appendChild(block);
+    element.replaceWith(frag);
   }
 
   // tools/importer/parsers/newsletter.js

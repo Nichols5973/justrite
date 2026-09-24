@@ -54,5 +54,24 @@ export default function parse(element, { document }) {
   }
 
   const block = WebImporter.Blocks.createBlock(document, { name: 'cards-value', cells });
-  element.replaceWith(block);
+
+  // Preserve the section's intro heading ("Why ComplianceSigns?") + subtitle
+  // above the block. These are section-level default content that would
+  // otherwise be lost when we replace the .home-why-csign element. Fall back to
+  // the source's static copy if the nodes don't scrape.
+  const frag = document.createDocumentFragment();
+  const srcHeading = element.querySelector('h2, h1');
+  const h = document.createElement('h2');
+  h.textContent = srcHeading ? srcHeading.textContent.replace(/\s+/g, ' ').trim() : 'Why ComplianceSigns?';
+  frag.appendChild(h);
+
+  const srcSub = element.querySelector('.sub-title');
+  const sub = document.createElement('p');
+  sub.textContent = srcSub
+    ? srcSub.textContent.replace(/\s+/g, ' ').trim()
+    : 'Quality you can trust. In our products. In our people. In every order';
+  frag.appendChild(sub);
+
+  frag.appendChild(block);
+  element.replaceWith(frag);
 }

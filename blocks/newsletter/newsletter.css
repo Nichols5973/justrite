@@ -57,8 +57,9 @@ main .section.newsletter-container .default-content-wrapper {
 main .section.newsletter-container .default-content-wrapper h2 {
   margin: 0 0 12px;
   color: #fff;
-  font-size: 32px;
-  font-weight: 700;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 main .section.newsletter-container .default-content-wrapper p {
@@ -146,7 +147,8 @@ main .section.newsletter-container .default-content-wrapper p {
 /* --- Desktop: two fields per row (matches the live 2x2 grid) --- */
 @media (width >= 600px) {
   main .section.newsletter-container .default-content-wrapper h2 {
-    font-size: 36px;
+    font-size: 40px;
+    line-height: 48px;
   }
 
   .newsletter .newsletter-row input,
