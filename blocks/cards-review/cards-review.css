@@ -27,6 +27,13 @@ main .section.cards-review-container > div {
 /* Intro column (heading + copy + button) */
 main .section.cards-review-container .default-content-wrapper {
   color: #fff;
+  text-align: left;
+}
+
+/* Heading, copy, and button all flush-left in the intro column. */
+main .section.cards-review-container .default-content-wrapper h2,
+main .section.cards-review-container .default-content-wrapper p {
+  text-align: left;
 }
 
 main .section.cards-review-container .default-content-wrapper h2 {
