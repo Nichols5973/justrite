@@ -410,6 +410,42 @@ var CustomImportScript = (() => {
     element.replaceWith(block);
   }
 
+  // tools/importer/parsers/newsletter.js
+  function parse8(element, { document: document2 }) {
+    const cell = (fieldName, value) => {
+      const div = document2.createElement("div");
+      div.append(document2.createComment(` field:${fieldName} `));
+      const p = document2.createElement("p");
+      p.textContent = value;
+      div.append(p);
+      return div;
+    };
+    const rows = [
+      ["newsletter"],
+      [cell("placeholder", "Enter your email address")],
+      [cell("cta", "Sign Up")],
+      [cell("action", "/p/emailconnection-subscribe")]
+    ];
+    const block = WebImporter.DOMUtils.createTable(rows, document2);
+    const frag = document2.createDocumentFragment();
+    const heading = element.querySelector("h1, h2, h3");
+    if (heading) {
+      const h = document2.createElement(heading.tagName.toLowerCase());
+      h.textContent = heading.textContent.trim();
+      frag.appendChild(h);
+    }
+    element.querySelectorAll("p").forEach((p) => {
+      const text = p.textContent.replace(/\s+/g, " ").trim();
+      if (text && !p.querySelector("img, picture")) {
+        const np = document2.createElement("p");
+        np.textContent = text;
+        frag.appendChild(np);
+      }
+    });
+    frag.appendChild(block);
+    element.replaceWith(frag);
+  }
+
   // tools/importer/transformers/compliancesigns-cleanup.js
   var TransformHook = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform(hookName, element, payload) {
@@ -500,7 +536,8 @@ var CustomImportScript = (() => {
     "tabs-industry": parse4,
     "cards-review": parse5,
     "cards-blog": parse6,
-    "cards-value": parse7
+    "cards-value": parse7,
+    newsletter: parse8
   };
   var PAGE_TEMPLATE = {
     name: "home",
@@ -536,6 +573,10 @@ var CustomImportScript = (() => {
       {
         name: "cards-value",
         instances: [".home-why-csign .container-xl", ".home-why-csign"]
+      },
+      {
+        name: "newsletter",
+        instances: [".home-sign-up .container-xl", ".home-sign-up"]
       }
     ],
     sections: [
@@ -545,7 +586,7 @@ var CustomImportScript = (() => {
       { id: "rc6", name: "Industry-based products", selector: [".home-food-service"], style: "light", blocks: ["tabs-industry"], defaultContent: [".home-food-service h2"] },
       { id: "rc7", name: "Customer reviews", selector: [".home-customer-review"], style: "navy-blue", blocks: ["cards-review"], defaultContent: [".home-customer-review .review-left h2", ".home-customer-review .review-left p", ".home-customer-review .review-left a"] },
       { id: "rc8", name: "News & Resources", selector: [".home-lastest-blogs"], style: "light", blocks: ["cards-blog"], defaultContent: [".home-lastest-blogs h2", ".home-lastest-blogs .blog-left a"] },
-      { id: "rc9", name: "Newsletter signup", selector: [".home-sign-up"], style: "dark", blocks: ["form"], defaultContent: [".home-sign-up h2", ".home-sign-up p"] },
+      { id: "rc9", name: "Newsletter signup", selector: [".home-sign-up"], style: "dark", blocks: ["newsletter"], defaultContent: [] },
       { id: "rc10", name: "Why ComplianceSigns", selector: [".home-why-csign"], style: "light", blocks: ["cards-value"], defaultContent: [".home-why-csign h2", ".home-why-csign .sub-title"] }
     ]
   };

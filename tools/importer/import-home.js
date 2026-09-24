@@ -9,6 +9,7 @@ import tabsIndustryParser from './parsers/tabs-industry.js';
 import cardsReviewParser from './parsers/cards-review.js';
 import cardsBlogParser from './parsers/cards-blog.js';
 import cardsValueParser from './parsers/cards-value.js';
+import newsletterParser from './parsers/newsletter.js';
 
 // TRANSFORMER IMPORTS
 import cleanupTransformer from './transformers/compliancesigns-cleanup.js';
@@ -23,6 +24,7 @@ const parsers = {
   'cards-review': cardsReviewParser,
   'cards-blog': cardsBlogParser,
   'cards-value': cardsValueParser,
+  newsletter: newsletterParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION - Embedded from page-templates.json
@@ -61,6 +63,10 @@ const PAGE_TEMPLATE = {
       name: 'cards-value',
       instances: ['.home-why-csign .container-xl', '.home-why-csign'],
     },
+    {
+      name: 'newsletter',
+      instances: ['.home-sign-up .container-xl', '.home-sign-up'],
+    },
   ],
   sections: [
     { id: 'rc3', name: 'Promotional banner grid', selector: ['.home-banner-section'], style: null, blocks: ['cards-promo'], defaultContent: [] },
@@ -69,7 +75,7 @@ const PAGE_TEMPLATE = {
     { id: 'rc6', name: 'Industry-based products', selector: ['.home-food-service'], style: 'light', blocks: ['tabs-industry'], defaultContent: ['.home-food-service h2'] },
     { id: 'rc7', name: 'Customer reviews', selector: ['.home-customer-review'], style: 'navy-blue', blocks: ['cards-review'], defaultContent: ['.home-customer-review .review-left h2', '.home-customer-review .review-left p', '.home-customer-review .review-left a'] },
     { id: 'rc8', name: 'News & Resources', selector: ['.home-lastest-blogs'], style: 'light', blocks: ['cards-blog'], defaultContent: ['.home-lastest-blogs h2', '.home-lastest-blogs .blog-left a'] },
-    { id: 'rc9', name: 'Newsletter signup', selector: ['.home-sign-up'], style: 'dark', blocks: ['form'], defaultContent: ['.home-sign-up h2', '.home-sign-up p'] },
+    { id: 'rc9', name: 'Newsletter signup', selector: ['.home-sign-up'], style: 'dark', blocks: ['newsletter'], defaultContent: [] },
     { id: 'rc10', name: 'Why ComplianceSigns', selector: ['.home-why-csign'], style: 'light', blocks: ['cards-value'], defaultContent: ['.home-why-csign h2', '.home-why-csign .sub-title'] },
   ],
 };

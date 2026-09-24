@@ -62,6 +62,13 @@
             ".home-why-csign .container-xl",
             ".home-why-csign"
           ]
+        },
+        {
+          "name": "newsletter",
+          "instances": [
+            ".home-sign-up .container-xl",
+            ".home-sign-up"
+          ]
         }
       ],
       "sections": [
@@ -159,12 +166,9 @@
           ],
           "style": "dark",
           "blocks": [
-            "form"
+            "newsletter"
           ],
-          "defaultContent": [
-            ".home-sign-up h2",
-            ".home-sign-up p"
-          ]
+          "defaultContent": []
         },
         {
           "id": "rc10",
