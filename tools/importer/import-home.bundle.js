@@ -328,7 +328,22 @@ var CustomImportScript = (() => {
       cells.push([imageCell, textCell]);
     });
     const block = WebImporter.Blocks.createBlock(document2, { name: "cards-review", cells });
-    element.replaceWith(block);
+    const frag = document2.createDocumentFragment();
+    frag.appendChild(block);
+    const rated = document2.createElement("p");
+    rated.className = "cards-review-rating-line";
+    rated.appendChild(document2.createTextNode("Rated 4.3/5 based on "));
+    const link = document2.createElement("a");
+    link.href = "https://www.trustpilot.com/review/www.compliancesigns.com";
+    link.textContent = "5,000+ reviews";
+    rated.appendChild(link);
+    rated.appendChild(document2.createTextNode(". Showing our 4 & 5 star reviews."));
+    const tp = document2.createElement("img");
+    tp.src = "https://www.compliancesigns.com/images/trustpilot.png";
+    tp.alt = "Trustpilot";
+    rated.appendChild(tp);
+    frag.appendChild(rated);
+    element.replaceWith(frag);
   }
 
   // tools/importer/parsers/cards-blog.js

@@ -146,20 +146,61 @@ main .section.cards-review-container .default-content-wrapper a:hover {
   font-style: normal;
 }
 
-/* --- Desktop: intro column left, three cards to the right --- */
+/* Trustpilot rating line below the cards (full-width, white, gold link). */
+main .section.cards-review-container .cards-review-rating-line {
+  margin: 20px 0 0;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+main .section.cards-review-container .cards-review-rating-line a,
+main .section.cards-review-container .cards-review-rating-line a:any-link {
+  color: #f5dd8d;
+  text-decoration: none;
+  white-space: normal;
+}
+
+main .section.cards-review-container .cards-review-rating-line a::after {
+  content: none;
+}
+
+main .section.cards-review-container .cards-review-rating-line picture,
+main .section.cards-review-container .cards-review-rating-line img {
+  display: inline-block;
+  height: 20px;
+  width: auto;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* kill the global image shine sweep on the small logo */
+main .section.cards-review-container .cards-review-rating-line picture::before {
+  content: none;
+}
+
+/* --- Desktop: intro column left, three cards to the right, rating below --- */
 @media (width >= 900px) {
   main .section.cards-review-container > div {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: 32px;
   }
 
-  main .section.cards-review-container .default-content-wrapper {
+  /* Intro column (first default-content wrapper). */
+  main .section.cards-review-container .default-content-wrapper:first-child {
     flex: 0 0 260px;
   }
 
   main .section.cards-review-container .cards-review-wrapper {
     flex: 1;
+  }
+
+  /* Rating line wrapper spans the full width on its own row below. */
+  main .section.cards-review-container .default-content-wrapper:has(.cards-review-rating-line) {
+    flex: 0 0 100%;
+    margin: 0;
   }
 
   .cards-review ul {

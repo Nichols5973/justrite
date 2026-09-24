@@ -67,5 +67,27 @@ export default function parse(element, { document }) {
   });
 
   const block = WebImporter.Blocks.createBlock(document, { name: 'cards-review', cells });
-  element.replaceWith(block);
+
+  // Below the cards: the Trustpilot rating line ("Rated 4.3/5 based on 5,000+
+  // reviews. Showing our 4 & 5 star reviews.") + the Trustpilot logo. This is
+  // section-level content in the source that would be lost when the
+  // .home-customer-review element is replaced.
+  const frag = document.createDocumentFragment();
+  frag.appendChild(block);
+
+  const rated = document.createElement('p');
+  rated.className = 'cards-review-rating-line';
+  rated.appendChild(document.createTextNode('Rated 4.3/5 based on '));
+  const link = document.createElement('a');
+  link.href = 'https://www.trustpilot.com/review/www.compliancesigns.com';
+  link.textContent = '5,000+ reviews';
+  rated.appendChild(link);
+  rated.appendChild(document.createTextNode('. Showing our 4 & 5 star reviews.'));
+  const tp = document.createElement('img');
+  tp.src = 'https://www.compliancesigns.com/images/trustpilot.png';
+  tp.alt = 'Trustpilot';
+  rated.appendChild(tp);
+  frag.appendChild(rated);
+
+  element.replaceWith(frag);
 }
