@@ -6576,6 +6576,30 @@
     ]
   },
   {
+    "id": "product-details",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "defaultSku",
+        "label": "Default SKU",
+        "description": "Product SKU used to fetch live data from the Adobe Commerce Catalog Service API."
+      }
+    ]
+  },
+  {
+    "id": "product-list-page",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "urlPath",
+        "label": "Category URL Path",
+        "description": "Category path used to fetch products, facets, sort, and pagination from the Adobe Commerce Catalog Service / Live Search API."
+      }
+    ]
+  },
+  {
     "id": "promotion",
     "fields": [
       {
