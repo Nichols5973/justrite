@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
+/* eslint-disable no-bitwise, no-continue, object-curly-newline, max-len */
 /**
  * Build an AEM (xwalk / crosswalk) content package from the migrated
  * .plain.html pages.
@@ -129,6 +130,55 @@ const noopLog = {
   info() {}, warn() {}, error() {}, debug() {},
 };
 
+/**
+ * Package-only: inside each tabs-industry tab, keep the featured banner image
+ * (the one following the `field:content_image` hint) and drop the product-card
+ * thumbnails. md2jcr maps one image per richtext field, so multiple images in a
+ * repeating item's richtext break JCR conversion. The rendered site keeps all
+ * images — this transform runs only on the package payload, never on disk.
+ */
+function stripTabsIndustryThumbnails(html) {
+  const start = html.indexOf('class="tabs-industry"');
+  if (start === -1) return html;
+  // The tabs-industry block is a self-contained top-level section <div>. Find its
+  // bounds by walking div depth from the opening tag.
+  const openTagStart = html.lastIndexOf('<div', start);
+  let depth = 0;
+  let end = html.length;
+  const tagRe = /<\/?div\b[^>]*>/g;
+  tagRe.lastIndex = openTagStart;
+  let m = tagRe.exec(html);
+  while (m) {
+    if (m[0].startsWith('</')) depth -= 1;
+    else depth += 1;
+    if (depth === 0) { end = m.index + m[0].length; break; }
+    m = tagRe.exec(html);
+  }
+  const before = html.slice(0, openTagStart);
+  let block = html.slice(openTagStart, end);
+  const after = html.slice(end);
+
+  // Within each tab's content cell, the first image (featured banner) sits right
+  // after `field:content_image`; all later images are product thumbnails. Remove
+  // <p>…<picture/img>…</p> wrappers that are NOT the featured banner.
+  // Split on the content_image hint so the banner in each tab is preserved.
+  const parts = block.split('<!-- field:content_image -->');
+  block = parts.map((part, idx) => {
+    if (idx === 0) return part; // before the first tab's banner
+    // The banner picture is the first <picture>…</picture> in this segment; keep
+    // it, then strip any subsequent <p> that wraps a picture/img (product thumbs).
+    const firstPicEnd = part.indexOf('</picture>');
+    if (firstPicEnd === -1) return part;
+    const head = part.slice(0, firstPicEnd + '</picture>'.length);
+    let tail = part.slice(firstPicEnd + '</picture>'.length);
+    // Remove <p> blocks in the tail that contain an image.
+    tail = tail.replace(/<p>\s*<picture>[\s\S]*?<\/picture>\s*<\/p>/g, '');
+    return head + tail;
+  }).join('<!-- field:content_image -->');
+
+  return before + block + after;
+}
+
 async function main() {
   const html2md = await loadHtml2md();
   const md2jcr = await loadMd2jcr();
@@ -149,7 +199,13 @@ async function main() {
 
   const failures = [];
   for (const page of PAGES) {
-    const raw = await readFile(path.join(WORKSPACE, page.html), 'utf-8');
+    let raw = await readFile(path.join(WORKSPACE, page.html), 'utf-8');
+    // Package-only transform: md2jcr maps a repeating item's richtext to a single
+    // image field, so the tabs-industry per-tab product THUMBNAILS (which the
+    // rendered site keeps) must be dropped for JCR — the featured banner image
+    // stays. This does NOT modify the on-disk content; it only affects the
+    // package payload so the block round-trips into the Universal Editor model.
+    raw = stripTabsIndustryThumbnails(raw);
     // Wrap the plain fragment so html2md finds a <main>.
     const doc = `<!DOCTYPE html><html><body><main>${raw}</main></body></html>`;
     const md = await html2md(doc, {

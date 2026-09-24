@@ -90,8 +90,29 @@ export default function decorate(block) {
         }
         current.append(node);
       });
-      // First group is the featured industry tile; the rest are products.
-      if (groups.length) groups[0].classList.add('tabs-industry-featured');
+
+      if (groups.length) {
+        // First group is the featured industry tile.
+        const featured = groups[0];
+        featured.classList.add('tabs-industry-featured');
+        // Overlay the industry name on the featured tile (matches source).
+        const label = document.createElement('span');
+        label.className = 'tabs-industry-featured-label';
+        label.textContent = item.labelText;
+        featured.append(label);
+        // The featured tile's link is the filled "Shop All" CTA.
+        featured.querySelectorAll('a').forEach((a) => a.classList.add('tabs-industry-shop-all'));
+      }
+
+      // Tag the "From $X" price line in each product card for styling.
+      groups.slice(1).forEach((card) => {
+        [...card.children].forEach((el) => {
+          if (el.tagName === 'P' && /\$\s*[\d.,]+/.test(el.textContent) && !el.querySelector('a')) {
+            el.classList.add('tabs-industry-price');
+          }
+        });
+      });
+
       const row = document.createElement('div');
       row.className = 'tabs-industry-cards';
       groups.forEach((g) => row.append(g));

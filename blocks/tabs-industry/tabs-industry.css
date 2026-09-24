@@ -88,21 +88,30 @@
 /*
  * Panel content layout: the block JS (decorate) regroups the flat richtext run
  * into a featured industry tile (.tabs-industry-featured) followed by product
- * cards (.tabs-industry-card), all inside a .tabs-industry-cards row. Source
- * layout: featured tile on the left (~270px) with product cards to the right.
+ * cards (.tabs-industry-card), all inside a .tabs-industry-cards row.
+ *
+ * Source layout (compliancesigns.com): a horizontal row where the FIRST cell is
+ * a tall dark featured photo tile (industry name overlaid + a filled orange
+ * "Shop All" button pinned to the bottom), followed by white bordered product
+ * cards (centered product image, "From $X" price, wrapping title, and an
+ * outlined orange "Select Options" button pinned to the bottom).
  */
 
-/* Mobile-first: stack featured tile + cards vertically */
+/* Mobile-first: 2-up grid; equal-height cells. */
 .tabs-industry .tabs-industry-cards {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  align-items: stretch;
 }
 
-/* Each card stacks its image / price / title / CTA */
+/* --- Product card: white, bordered, image / price / title / CTA stacked --- */
 .tabs-industry .tabs-industry-card {
   display: flex;
   flex-direction: column;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
 }
 
 /* stylelint-disable-next-line no-descending-specificity */
@@ -111,60 +120,144 @@
   margin: 0 0 8px;
 }
 
-/* Titles/links wrap within their card (override the global link nowrap/ellipsis) */
-.tabs-industry .tabs-industry-card h3,
-.tabs-industry .tabs-industry-card a {
-  display: block;
-  overflow: visible;
-  white-space: normal;
-  text-overflow: clip;
-  font-size: 14px;
-  line-height: 1.3;
-}
-
-/* Neutralize the global chevron ::after on card links */
-.tabs-industry .tabs-industry-card a::after {
-  content: none;
-}
-
+/* Product image: centered, contained, fixed viewport. */
 .tabs-industry .tabs-industry-card picture,
 .tabs-industry .tabs-industry-card img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 180px;
   object-fit: contain;
+  margin: 0 auto 12px;
 }
 
-/* Desktop: featured tile + product cards side-by-side */
+/* "From $X.XX" price line. */
+.tabs-industry .tabs-industry-card .tabs-industry-price {
+  color: #3d4644;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* Product title wraps within the card (override the global link nowrap). */
+.tabs-industry .tabs-industry-card h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+.tabs-industry .tabs-industry-card h3 a {
+  display: inline;
+  overflow: visible;
+  color: #3d4644;
+  font: inherit;
+  white-space: normal;
+  text-overflow: clip;
+  text-decoration: none;
+}
+
+/* "Select Options" CTA: outlined box, orange text, pinned to the bottom. */
+.tabs-industry .tabs-industry-card > p:last-child {
+  margin-top: auto;
+  margin-bottom: 0;
+}
+
+.tabs-industry .tabs-industry-card > p:last-child a {
+  display: block;
+  width: 100%;
+  padding: 8px 0;
+  border: 1px solid #ccc;
+  color: var(--main-accent-color);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.tabs-industry .tabs-industry-card > p:last-child a:hover {
+  border-color: var(--main-accent-color);
+  background-color: var(--main-accent-color);
+  color: #fff;
+}
+
+/* --- Featured industry tile: dark photo, overlaid label + Shop All CTA --- */
+.tabs-industry .tabs-industry-featured {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 20px;
+  border: 0;
+  overflow: hidden;
+  min-height: 320px;
+  background-color: #1f2937;
+}
+
+/* The featured photo fills the tile. */
+.tabs-industry .tabs-industry-featured picture,
+.tabs-industry .tabs-industry-featured img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Dark gradient so the overlaid text is legible. */
+.tabs-industry .tabs-industry-featured::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, rgb(0 0 0 / 65%) 0%, rgb(0 0 0 / 10%) 55%, rgb(0 0 0 / 5%) 100%);
+}
+
+.tabs-industry .tabs-industry-featured-label {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 12px;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* "Shop All" — filled orange button. */
+.tabs-industry .tabs-industry-featured .tabs-industry-shop-all {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  padding: 10px 22px;
+  background-color: var(--main-accent-color);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tabs-industry .tabs-industry-featured .tabs-industry-shop-all:hover {
+  background-color: var(--brand-accent-hover, #cf6608);
+  color: #fff;
+}
+
+/* Neutralize the global chevron ::after on all panel links. */
+.tabs-industry .tabs-industry-card a::after,
+.tabs-industry .tabs-industry-featured a::after {
+  content: none;
+}
+
+/* --- Tablet: 3-up --- */
+@media (width >= 600px) {
+  .tabs-industry .tabs-industry-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* --- Desktop: featured tile + 4 product cards in one 5-column row --- */
 @media (width >= 900px) {
   .tabs-industry .tabs-industry-cards {
-    flex-direction: row;
-    align-items: flex-start;
+    grid-template-columns: repeat(5, 1fr);
   }
-
-  /* Featured industry tile: fixed ~270px column (mirrors source) */
-  .tabs-industry .tabs-industry-featured {
-    flex: 0 0 270px;
-    min-width: 0;
-  }
-
-  /* Product cards: share the remaining width equally; min-width:0 lets them
-     shrink so the row never overflows the container. */
-  .tabs-industry .tabs-industry-card:not(.tabs-industry-featured) {
-    flex: 1 1 0;
-    min-width: 0;
-  }
-
-  /* Cap product-card image height so tall signage doesn't blow out the row */
-  .tabs-industry .tabs-industry-card:not(.tabs-industry-featured) img {
-    max-height: 200px;
-    width: auto;
-    max-width: 100%;
-  }
-}
-
-/* CTA links use the brand accent (source orange) */
-.tabs-industry .tabs-industry-panel a {
-  color: var(--main-accent-color);
-  font-weight: 700;
 }
