@@ -27,28 +27,24 @@ main .section.cards-review-container > div {
 /* Intro column (heading + copy + button) */
 main .section.cards-review-container .default-content-wrapper {
   color: #fff;
-  text-align: left;
-}
-
-/* Heading, copy, and button all flush-left in the intro column. */
-main .section.cards-review-container .default-content-wrapper h2,
-main .section.cards-review-container .default-content-wrapper p {
-  text-align: left;
+  text-align: center;
 }
 
 main .section.cards-review-container .default-content-wrapper h2 {
-  margin: 0 0 12px;
+  margin: 0 0 16px;
   color: #fff;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 500;
   line-height: 1.2;
+  text-align: center;
 }
 
 main .section.cards-review-container .default-content-wrapper p {
-  margin: 0 0 16px;
+  margin: 0 0 20px;
   color: #fff;
   font-size: 14px;
   line-height: 1.5;
+  text-align: center;
 }
 
 /* Orange "View All Reviews" button */
@@ -184,13 +180,20 @@ main .section.cards-review-container .cards-review-rating-line picture::before {
   main .section.cards-review-container > div {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: center;
     gap: 32px;
   }
 
-  /* Intro column (first default-content wrapper). */
+  /* Intro column (first default-content wrapper) — vertically centered beside
+     the cards, with the large "Reviews Are In" heading. */
   main .section.cards-review-container .default-content-wrapper:first-child {
-    flex: 0 0 260px;
+    flex: 0 0 300px;
+    align-self: center;
+  }
+
+  main .section.cards-review-container .default-content-wrapper:first-child h2 {
+    font-size: 52px;
+    line-height: 1.2;
   }
 
   main .section.cards-review-container .cards-review-wrapper {
