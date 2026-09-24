@@ -1,20 +1,97 @@
 /*
- * newsletter — email signup on the dark "Stay Up to Date" section.
- * Rounded pill input with an orange Sign Up button, matching the source.
+ * newsletter — "Stay Up to Date with Compliance" signup.
+ *
+ * Layout matches the live site: a full-bleed dark background photo with the
+ * heading, copy, and a 4-field form (First/Last, Email/Industry) overlaid on
+ * top — NOT stacked beneath the image. The section that contains the newsletter
+ * block gets `.newsletter-container`; its first default-content picture is the
+ * background, positioned absolutely behind the overlaid content.
  */
+
+/* --- Section becomes an overlay stage --- */
+main .section.newsletter-container {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  padding: 56px 0;
+  background-color: #002d4c;
+}
+
+/* The default-content picture (background photo) fills the section. */
+main .section.newsletter-container .default-content-wrapper picture,
+main .section.newsletter-container .default-content-wrapper picture img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* kill the global image "shine" sweep on the background */
+main .section.newsletter-container .default-content-wrapper picture::before {
+  content: none;
+}
+
+/* Dark scrim so overlaid text stays legible. */
+main .section.newsletter-container .default-content-wrapper picture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgb(0 45 76 / 65%);
+  z-index: 1;
+}
+
+/* Overlaid text (heading + copy) sits above the image. */
+main .section.newsletter-container .default-content-wrapper {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+  color: #fff;
+  text-align: center;
+}
+
+main .section.newsletter-container .default-content-wrapper h2 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+main .section.newsletter-container .default-content-wrapper p {
+  margin: 0 0 8px;
+  color: #fff;
+}
+
+/* --- The form block, overlaid above the background --- */
+.newsletter {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+  margin: 20px auto 0;
+  padding: 0 24px;
+}
 
 .newsletter .newsletter-form {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  max-width: 520px;
-  margin: 16px 0 0;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.newsletter .newsletter-form input {
-  flex: 1 1 240px;
+.newsletter .newsletter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.newsletter .newsletter-row input,
+.newsletter .newsletter-row select {
+  flex: 1 1 200px;
   min-width: 0;
-  padding: 12px 16px;
+  padding: 12px 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 15px;
@@ -22,14 +99,16 @@
   color: #222;
 }
 
-.newsletter .newsletter-form input:focus {
+.newsletter .newsletter-row input:focus,
+.newsletter .newsletter-row select:focus {
   outline: 2px solid var(--brand-accent, #e87511);
   outline-offset: 1px;
 }
 
-.newsletter .newsletter-form button {
-  flex: 0 0 auto;
-  padding: 12px 28px;
+.newsletter .newsletter-submit {
+  align-self: center;
+  margin-top: 4px;
+  padding: 12px 40px;
   border: 0;
   border-radius: 4px;
   background-color: var(--brand-accent, #e87511);
@@ -40,12 +119,25 @@
   cursor: pointer;
 }
 
-.newsletter .newsletter-form button:hover {
+.newsletter .newsletter-submit:hover {
   background-color: var(--brand-accent-hover, #cf6608);
 }
 
 .newsletter .newsletter-thanks {
-  margin: 16px 0 0;
+  margin: 8px 0 0;
   color: #fff;
   font-weight: 600;
+  text-align: center;
+}
+
+/* --- Desktop: two fields per row (matches the live 2x2 grid) --- */
+@media (width >= 600px) {
+  main .section.newsletter-container .default-content-wrapper h2 {
+    font-size: 36px;
+  }
+
+  .newsletter .newsletter-row input,
+  .newsletter .newsletter-row select {
+    flex: 1 1 0;
+  }
 }
