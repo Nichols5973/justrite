@@ -59,15 +59,14 @@ export default function parse(element, { document }) {
 
   const block = WebImporter.Blocks.createBlock(document, { name: 'cards-product', cells });
 
-  // Preserve the "Best Sellers" section heading that lives inside the matched
-  // element, so it isn't lost when we replace the element with the block.
+  // Preserve the "Best Sellers" section heading above the block. The source
+  // renders it dynamically so it may not be present in the scraped element;
+  // fall back to the static heading so the section is always labelled.
   const heading = element.querySelector('h1, h2, h3');
   const frag = document.createDocumentFragment();
-  if (heading) {
-    const h = document.createElement(heading.tagName.toLowerCase());
-    h.textContent = heading.textContent.trim();
-    frag.appendChild(h);
-  }
+  const h = document.createElement('h2');
+  h.textContent = heading ? heading.textContent.trim() : 'Best Sellers';
+  frag.appendChild(h);
   frag.appendChild(block);
   element.replaceWith(frag);
 }

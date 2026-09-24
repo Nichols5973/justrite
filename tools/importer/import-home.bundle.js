@@ -156,12 +156,12 @@ var CustomImportScript = (() => {
       imageCell.appendChild(img);
       const textCell = document2.createDocumentFragment();
       textCell.appendChild(document2.createComment(" field:text "));
-      const h = document2.createElement("h3");
+      const h2 = document2.createElement("h3");
       const a = document2.createElement("a");
       a.href = product.href;
       a.textContent = product.title;
-      h.appendChild(a);
-      textCell.appendChild(h);
+      h2.appendChild(a);
+      textCell.appendChild(h2);
       const priceP = document2.createElement("p");
       priceP.textContent = product.price;
       textCell.appendChild(priceP);
@@ -176,11 +176,9 @@ var CustomImportScript = (() => {
     const block = WebImporter.Blocks.createBlock(document2, { name: "cards-product", cells });
     const heading = element.querySelector("h1, h2, h3");
     const frag = document2.createDocumentFragment();
-    if (heading) {
-      const h = document2.createElement(heading.tagName.toLowerCase());
-      h.textContent = heading.textContent.trim();
-      frag.appendChild(h);
-    }
+    const h = document2.createElement("h2");
+    h.textContent = heading ? heading.textContent.trim() : "Best Sellers";
+    frag.appendChild(h);
     frag.appendChild(block);
     element.replaceWith(frag);
   }

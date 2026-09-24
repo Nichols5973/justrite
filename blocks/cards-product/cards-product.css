@@ -11,11 +11,14 @@
  *     > .cards-product-body   (h3 title, p price, p.button-container > a.button)
  */
 
-/* Light-gray band behind the cards (source: rgb(229,231,235) = #e5e7eb). */
+/* Light-gray band behind the cards (source: rgb(229,231,235) = #e5e7eb).
+   The section (.cards-product-container) also carries the gray + the heading's
+   top padding; here we pad the sides + bottom and add a small gap under the
+   heading so the grid connects cleanly to it. */
 .cards-product {
   background-color: #e5e7eb;
   color: var(--text-color); /* #222 */
-  padding: 24px 16px;
+  padding: 16px 16px 24px;
   margin: 0;
 }
 
@@ -165,10 +168,38 @@
 
 @media (width >= 900px) {
   .cards-product {
-    padding: 40px 0;
+    padding: 16px 0 40px;
   }
 
   .cards-product ul {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* "Best Sellers" heading sits in the section's default content, above the grid.
+   Put the gray band on the whole section so the heading shares it (matches the
+   live layout where "Best Sellers" is inside the gray area). */
+main .section.cards-product-container {
+  background-color: #e5e7eb;
+}
+
+main .section.cards-product-container .default-content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 0;
+}
+
+main .section.cards-product-container .default-content-wrapper h2 {
+  margin: 0;
+  color: #374151;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
+}
+
+@media (width >= 900px) {
+  main .section.cards-product-container .default-content-wrapper {
+    padding: 40px 32px 0;
   }
 }
