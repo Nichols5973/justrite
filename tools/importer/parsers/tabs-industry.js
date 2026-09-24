@@ -88,24 +88,20 @@ export default function parse(element, { document }) {
     shopAllP.appendChild(shopAll);
     contentCell.appendChild(shopAllP);
 
+    // Product cards as text/links only. The featured banner is the single
+    // content_image; md2jcr's richtext maps one image per field, so product
+    // thumbnails are intentionally omitted here (titles/prices/links remain).
     tab.products.forEach((product) => {
-      const pImg = document.createElement('p');
-      const productImg = document.createElement('img');
-      productImg.src = product.img;
-      productImg.alt = product.alt;
-      pImg.appendChild(productImg);
-      contentCell.appendChild(pImg);
-
-      const priceP = document.createElement('p');
-      priceP.textContent = product.price;
-      contentCell.appendChild(priceP);
-
       const h = document.createElement('h3');
       const a = document.createElement('a');
       a.href = product.href;
       a.textContent = product.title;
       h.appendChild(a);
       contentCell.appendChild(h);
+
+      const priceP = document.createElement('p');
+      priceP.textContent = product.price;
+      contentCell.appendChild(priceP);
 
       const selectP = document.createElement('p');
       const selectA = document.createElement('a');

@@ -71,16 +71,24 @@ var CustomImportScript = (() => {
       const h1 = document.querySelector("h1");
       const title = h1 ? h1.textContent.replace(/\s+/g, " ").trim() : document.title || "";
       const descBlock = pageType === "PDP" ? parseDescription(document) : null;
+      const buildConfigCell = (fieldName, value) => {
+        const cell = document.createElement("div");
+        cell.append(document.createComment(` field:${fieldName} `));
+        const p = document.createElement("p");
+        p.textContent = value;
+        cell.append(p);
+        return cell;
+      };
       let commerceBlock;
       if (pageType === "PDP") {
         commerceBlock = WebImporter.DOMUtils.createTable([
           ["product-details"],
-          ["defaultSku", skuFromUrl(url)]
+          [buildConfigCell("defaultSku", skuFromUrl(url))]
         ], document);
       } else {
         commerceBlock = WebImporter.DOMUtils.createTable([
           ["product-list-page"],
-          ["urlPath", categoryPathFromUrl(url)]
+          [buildConfigCell("urlPath", categoryPathFromUrl(url))]
         ], document);
       }
       main.innerHTML = "";

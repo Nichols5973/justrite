@@ -232,21 +232,15 @@ var CustomImportScript = (() => {
       shopAllP.appendChild(shopAll);
       contentCell.appendChild(shopAllP);
       tab.products.forEach((product) => {
-        const pImg = document2.createElement("p");
-        const productImg = document2.createElement("img");
-        productImg.src = product.img;
-        productImg.alt = product.alt;
-        pImg.appendChild(productImg);
-        contentCell.appendChild(pImg);
-        const priceP = document2.createElement("p");
-        priceP.textContent = product.price;
-        contentCell.appendChild(priceP);
         const h = document2.createElement("h3");
         const a = document2.createElement("a");
         a.href = product.href;
         a.textContent = product.title;
         h.appendChild(a);
         contentCell.appendChild(h);
+        const priceP = document2.createElement("p");
+        priceP.textContent = product.price;
+        contentCell.appendChild(priceP);
         const selectP = document2.createElement("p");
         const selectA = document2.createElement("a");
         selectA.href = product.href;

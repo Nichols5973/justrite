@@ -10,3 +10,6 @@ helix-importer-ui
 
 migration-work/navigation-validation/
 migration-work/commerce-validation/
+
+tools/package/dist/
+tools/package/debug*.md

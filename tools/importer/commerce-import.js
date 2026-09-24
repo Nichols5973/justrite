@@ -82,16 +82,28 @@ export default {
     const descBlock = pageType === 'PDP' ? parseDescription(document) : null;
 
     // Commerce block config (not DOM-dependent).
+    // Modeled xwalk blocks with a single field take a single-column body cell
+    // that carries a `field:<name>` hint followed by the value (NOT a two-column
+    // key/value row, which md2jcr rejects for a one-field model).
+    const buildConfigCell = (fieldName, value) => {
+      const cell = document.createElement('div');
+      cell.append(document.createComment(` field:${fieldName} `));
+      const p = document.createElement('p');
+      p.textContent = value;
+      cell.append(p);
+      return cell;
+    };
+
     let commerceBlock;
     if (pageType === 'PDP') {
       commerceBlock = WebImporter.DOMUtils.createTable([
         ['product-details'],
-        ['defaultSku', skuFromUrl(url)],
+        [buildConfigCell('defaultSku', skuFromUrl(url))],
       ], document);
     } else {
       commerceBlock = WebImporter.DOMUtils.createTable([
         ['product-list-page'],
-        ['urlPath', categoryPathFromUrl(url)],
+        [buildConfigCell('urlPath', categoryPathFromUrl(url))],
       ], document);
     }
 
