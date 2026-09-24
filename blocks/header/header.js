@@ -30,9 +30,48 @@ function buildSearch() {
   const btn = document.createElement('button');
   btn.type = 'submit';
   btn.setAttribute('aria-label', 'Search');
-  btn.innerHTML = '<span class="nav-search-icon" aria-hidden="true"></span>';
+  btn.innerHTML = '<span class="nav-search-icon" aria-hidden="true"></span><span class="nav-search-label">Search</span>';
   form.append(input, btn);
   return form;
+}
+
+/** Icon for a utility link, from where it points (phone, contact, account, cart). */
+function toolIcon(href) {
+  if (href.startsWith('tel:')) return 'phone';
+  if (/contact/i.test(href)) return 'contact';
+  if (/account|customer|login/i.test(href)) return 'account';
+  if (/cart/i.test(href)) return 'cart';
+  return null;
+}
+
+/**
+ * Decorate a utility link: phone numbers keep their visible text; the other
+ * tools become icon buttons with the link text kept as the accessible label.
+ */
+function buildTool(a) {
+  const href = a.getAttribute('href') || '';
+  const icon = toolIcon(href);
+  const label = a.textContent.trim();
+  a.textContent = '';
+  if (icon) {
+    const span = document.createElement('span');
+    span.className = `nav-icon nav-icon-${icon}`;
+    span.setAttribute('aria-hidden', 'true');
+    a.append(span);
+  }
+  const text = document.createElement('span');
+  text.className = icon === 'phone' || !icon ? 'nav-tool-label' : 'nav-tool-label nav-visually-hidden';
+  text.textContent = label;
+  a.append(text);
+  a.title = label;
+  if (icon === 'cart') {
+    const count = document.createElement('span');
+    count.className = 'nav-cart-count';
+    count.textContent = '0';
+    a.append(count);
+  }
+  a.className = icon === 'phone' ? 'nav-phone' : 'nav-tool';
+  return a;
 }
 
 function closeAllPanels(navList) {
@@ -50,8 +89,8 @@ export default async function decorate(block) {
   header.setAttribute('aria-label', 'Main navigation');
 
   const sections = nav ? [...nav.children].filter((c) => c.tagName === 'DIV') : [];
-  const brandSection = sections[0];
-  const navSection = sections[1];
+  const [brandSection, navSection, ...ctaSections] = sections;
+  const desktop = window.matchMedia('(min-width: 900px)');
 
   // --- Brand / utility bar ---
   const brand = document.createElement('div');
@@ -83,7 +122,9 @@ export default async function decorate(block) {
     const toolLinks = brandSection.querySelector('ul');
     if (toolLinks) {
       toolLinks.querySelectorAll('a').forEach((a) => {
-        tools.append(a);
+        const tool = buildTool(a);
+        if (tool.classList.contains('nav-phone')) brand.append(tool);
+        else tools.append(tool);
       });
     }
   }
@@ -103,11 +144,12 @@ export default async function decorate(block) {
   navList.className = 'nav-sections';
 
   if (navSection) {
-    const topUl = navSection.querySelector(':scope > ul');
+    const topUl = navSection.querySelector('ul');
     if (topUl) {
       [...topUl.children].forEach((li) => {
         const item = document.createElement('li');
-        const trigger = li.querySelector(':scope > a');
+        // AEM rich text wraps each top-level label in a <p>.
+        const trigger = li.querySelector(':scope > a, :scope > p > a');
         const panel = li.querySelector(':scope > ul');
 
         if (trigger && panel) {
@@ -117,8 +159,11 @@ export default async function decorate(block) {
           btn.textContent = trigger.textContent;
           btn.className = 'nav-drop-trigger';
           btn.setAttribute('aria-expanded', 'false');
+          // Desktop: the label links to its landing page and the panel opens on
+          // hover. Mobile: tapping the label toggles its panel.
           btn.addEventListener('click', (e) => {
-            if (btn.getAttribute('href') === '#') e.preventDefault();
+            if (desktop.matches && btn.getAttribute('href') !== '#') return;
+            e.preventDefault();
             const open = btn.getAttribute('aria-expanded') === 'true';
             closeAllPanels(navList);
             btn.setAttribute('aria-expanded', open ? 'false' : 'true');
@@ -129,7 +174,14 @@ export default async function decorate(block) {
           const panelList = document.createElement('ul');
           panel.querySelectorAll(':scope > li').forEach((sub) => {
             const subLi = document.createElement('li');
-            subLi.append(sub.querySelector('a') || sub);
+            const link = sub.querySelector('a');
+            if (link) {
+              subLi.append(link);
+            } else {
+              // Unlinked entries are group headings within the panel.
+              subLi.className = 'nav-panel-heading';
+              subLi.textContent = sub.textContent.trim();
+            }
             panelList.append(subLi);
           });
           dropdown.append(panelList);
@@ -158,13 +210,23 @@ export default async function decorate(block) {
   });
 
   // Reset state when crossing the desktop breakpoint
-  const desktop = window.matchMedia('(min-width: 900px)');
   desktop.addEventListener('change', () => {
     closeAllPanels(navList);
     hamburger.setAttribute('aria-expanded', 'false');
     header.classList.remove('nav-open');
   });
 
-  header.append(brand, navList);
+  // Main nav row: sections + call-to-action links (e.g. Request a Quote).
+  const navRow = document.createElement('div');
+  navRow.className = 'nav-row';
+  navRow.append(navList);
+  ctaSections.forEach((section) => {
+    section.querySelectorAll('a').forEach((a) => {
+      a.className = 'nav-cta';
+      navRow.append(a);
+    });
+  });
+
+  header.append(brand, navRow);
   block.append(header);
 }

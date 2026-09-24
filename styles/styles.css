@@ -407,14 +407,14 @@ body.blue-theme header .nav-wrapper nav .nav-sections ul > li > a:hover{
 }
 
 /* theme header-footer */
+
+/* Sticky (as on the source site): stays in flow so it never covers the page,
+   and grows with its content (utility bar + main nav row). */
 header {
-  height: var(--nav-height);
-  min-height: 90px;
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 111;
+  min-height: var(--nav-height);
 }
 
 header .header,
