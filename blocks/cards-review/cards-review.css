@@ -1,0 +1,234 @@
+/*
+ * cards-review — customer testimonials on the dark-blue Reviews section.
+ *
+ * Live layout: a full-width navy section (#004579). On the left an intro column
+ * ("Reviews Are In" + description + orange "View All Reviews" button); to the
+ * right a row of white testimonial cards. Each card: headline, then an orange
+ * star rating, then the quote and reviewer name.
+ *
+ * The intro is section default content (.default-content-wrapper); the cards
+ * are the .cards-review block. The section (.cards-review-container) lays them
+ * out side-by-side.
+ */
+
+/* --- Section: navy field; a flex row of intro column | cards | (rating line
+   wraps to a full-width row below). The section's direct children are the
+   wrappers (intro default-content, cards-review-wrapper, rating default-content). */
+main .section.cards-review-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  margin: 0;
+
+  /* full-bleed navy; content centered within 1200px via symmetric padding */
+  padding: 40px max(24px, calc((100% - 1200px) / 2));
+  background-color: #004579;
+}
+
+/* Neutralize the global `main > .section > div { max-width; margin:auto }` on
+   the flex-item wrappers so they lay out in the flex row (margin:auto in a flex
+   row would otherwise absorb the free space and break the layout). */
+main .section.cards-review-container > div {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Intro column: heading + copy + orange button (the FIRST default-content). */
+main .section.cards-review-container .default-content-wrapper:first-child {
+  color: #fff;
+  text-align: center;
+}
+
+main .section.cards-review-container .default-content-wrapper:first-child h2 {
+  margin: 0 0 16px;
+  color: #fff;
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+main .section.cards-review-container .default-content-wrapper:first-child p {
+  margin: 0 0 20px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Orange "View All Reviews" button — scoped to the intro only. */
+main .section.cards-review-container .default-content-wrapper:first-child a,
+main .section.cards-review-container .default-content-wrapper:first-child a:any-link {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 2px;
+  background-color: var(--brand-accent, #e87511);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+main .section.cards-review-container .default-content-wrapper:first-child a::after {
+  content: none;
+}
+
+main .section.cards-review-container .default-content-wrapper:first-child a:hover {
+  background-color: var(--brand-accent-hover, #cf6608);
+  color: #fff;
+}
+
+/* --- Cards ---
+   (intro rules above use higher-specificity section selectors; the card rules
+   below target different elements, so the descending-specificity ordering
+   warning is a false positive here.) */
+/* stylelint-disable no-descending-specificity */
+.cards-review ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.cards-review li {
+  display: flex;
+}
+
+.cards-review .cards-review-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 20px;
+  background-color: #fff;
+  color: #374151;
+  border-radius: 2px;
+  text-align: left;
+}
+
+.cards-review .cards-review-body p,
+.cards-review .cards-review-body h2,
+.cards-review .cards-review-body h3,
+.cards-review .cards-review-body h4 {
+  margin: 0;
+}
+
+/* Headline (first) */
+.cards-review .cards-review-body h2,
+.cards-review .cards-review-body h3,
+.cards-review .cards-review-body h4 {
+  color: #374151;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Star rating — orange, directly under the headline */
+.cards-review .cards-review-body .cards-review-stars {
+  color: var(--brand-accent, #e87511);
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 2px;
+}
+
+/* Quote body */
+.cards-review .cards-review-body p {
+  color: #374151;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Reviewer name — emphasised */
+.cards-review .cards-review-body p:last-child {
+  margin-top: 4px;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.cards-review .cards-review-body p:last-child em {
+  font-style: normal;
+}
+
+/* Trustpilot rating line below the cards — full-width, centered, white text,
+   yellow "5,000+ reviews" link (NOT a button), small inline Trustpilot logo.
+   NOTE: the importer strips custom classes from default content, so this is
+   targeted structurally: the review section's LAST default-content wrapper
+   (the one containing the Trustpilot <picture>). */
+main .section.cards-review-container .default-content-wrapper:has(picture) {
+  flex: 1 1 100%;
+  margin: 8px 0 0;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+main .section.cards-review-container .default-content-wrapper:has(picture) p {
+  color: #fff;
+  text-align: center;
+}
+
+/* Yellow text link — override the intro's orange-button treatment. */
+main .section.cards-review-container .default-content-wrapper:has(picture) a,
+main .section.cards-review-container .default-content-wrapper:has(picture) a:any-link {
+  display: inline;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: #f5dd8d;
+  font-weight: 400;
+  text-decoration: underline;
+  white-space: normal;
+}
+
+main .section.cards-review-container .default-content-wrapper:has(picture) a::after {
+  content: none;
+}
+
+main .section.cards-review-container .default-content-wrapper:has(picture) a:hover {
+  background: none;
+  color: #f5dd8d;
+}
+
+/* Small Trustpilot logo, inline with the sentence. */
+main .section.cards-review-container .default-content-wrapper:has(picture) picture,
+main .section.cards-review-container .default-content-wrapper:has(picture) img {
+  display: inline-block;
+  height: 14px;
+  width: auto;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* kill the global image shine sweep on the small logo */
+main .section.cards-review-container .default-content-wrapper:has(picture) picture::before {
+  content: none;
+}
+
+/* --- Desktop: intro column left, three cards to the right, rating below --- */
+@media (width >= 900px) {
+  /* Intro column (first default-content wrapper) — vertically centered beside
+     the cards, with the large "Reviews Are In" heading. */
+  main .section.cards-review-container .default-content-wrapper:first-child {
+    flex: 0 0 300px;
+    align-self: center;
+  }
+
+  main .section.cards-review-container .default-content-wrapper:first-child h2 {
+    font-size: 52px;
+    line-height: 1.2;
+  }
+
+  main .section.cards-review-container .cards-review-wrapper {
+    flex: 1;
+  }
+
+  .cards-review ul {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+/* stylelint-enable no-descending-specificity */

@@ -1,0 +1,127 @@
+/*
+ * product-details placeholder — commerce PDP drop-in demo state.
+ * Two-column layout (gallery + info) matching a typical PDP; skeleton slots
+ * stand in for live catalog data. Mobile-first.
+ */
+
+.product-details .product-details-placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px 0;
+}
+
+/* Gallery */
+.product-details .product-details-gallery {
+  flex: 1;
+}
+
+.product-details .pd-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #eef1f4;
+  border-radius: 4px;
+}
+
+.product-details .pd-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 60%), transparent);
+  animation: pd-shimmer 1.4s infinite;
+}
+
+@keyframes pd-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+.product-details .pd-skeleton-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 420px;
+}
+
+/* Info column */
+.product-details .product-details-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.product-details .pd-badge {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: #eaf3f8;
+  color: var(--brand-navy, #003b5c);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.product-details .pd-skeleton-line {
+  height: 16px;
+}
+
+.product-details .pd-skeleton-line.pd-price {
+  height: 28px;
+  background-color: #e3e8ec;
+}
+
+.product-details .pd-w-40 { width: 40%; }
+.product-details .pd-w-80 { width: 80%; }
+.product-details .pd-w-90 { width: 90%; }
+.product-details .pd-w-100 { width: 100%; }
+
+.product-details .pd-options {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.product-details .pd-skeleton-chip {
+  width: 56px;
+  height: 32px;
+  border-radius: 4px;
+}
+
+.product-details .pd-cta {
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 12px 28px;
+  border: 0;
+  border-radius: 2px;
+  background-color: var(--brand-accent, #e87511);
+  color: #fff;
+  font-family: var(--heading-font-family);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.product-details .pd-note {
+  margin: 8px 0 0;
+  color: #6b7680;
+  font-size: 13px;
+}
+
+.product-details .pd-note code {
+  padding: 1px 6px;
+  border-radius: 3px;
+  background-color: #f4f6f8;
+  color: var(--brand-navy, #003b5c);
+  font-size: 12px;
+}
+
+/* Desktop: gallery + info side by side */
+@media (width >= 900px) {
+  .product-details .product-details-placeholder {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 48px;
+  }
+}

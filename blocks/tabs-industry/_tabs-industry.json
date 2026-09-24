@@ -1,0 +1,71 @@
+{
+  "definitions": [
+    {
+      "title": "Tabs Industry",
+      "id": "tabs-industry",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Tabs Industry",
+              "filter": "tabs-industry"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Tabs Industry Item",
+      "id": "tabs-industry-item",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Tabs Industry Item",
+              "model": "tabs-industry-item",
+              "title": "Tab Name"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "tabs-industry-item",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "title",
+          "value": "",
+          "label": "Tab Title"
+        },
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "content_image",
+          "label": "Featured Image",
+          "multi": false
+        },
+        {
+          "component": "richtext",
+          "name": "content_richtext",
+          "value": "",
+          "label": "Content",
+          "valueType": "string"
+        }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "id": "tabs-industry",
+      "components": [
+        "tabs-industry-item"
+      ]
+    }
+  ]
+}

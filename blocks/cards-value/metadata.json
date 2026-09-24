@@ -1,0 +1,15 @@
+{
+  "variantName": "cards-value",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "imagePattern": "icon",
+    "density": "standard",
+    "purpose": "value-prop"
+  },
+  "contentPattern": "Value-proposition items, each with a small centered icon, a heading, and a short description. No CTA.",
+  "usage": "Why-choose-us value props row (4-up).",
+  "options": [],
+  "memberVariantIds": ["cards-value"]
+}

@@ -1,0 +1,161 @@
+/*
+ * cards-blog — "News & Resources" editorial cards.
+ *
+ * Live layout: a heading row ("News & Resources" left, "View All" link right),
+ * then a featured article (large image-over-text card on the LEFT) beside two
+ * secondary articles stacked on the RIGHT as horizontal (image left / text
+ * right) rows.
+ *
+ * Section heading + "View All" are section default content
+ * (.cards-blog-container .default-content-wrapper); the cards are the
+ * .cards-blog block, whose first <li> is .cards-blog-featured.
+ */
+
+/* --- Section heading row: "News & Resources" left, "View All" right --- */
+main .section.cards-blog-container .default-content-wrapper {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+main .section.cards-blog-container .default-content-wrapper h2 {
+  margin: 0;
+  color: #374151;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+main .section.cards-blog-container .default-content-wrapper p {
+  margin: 0;
+}
+
+main .section.cards-blog-container .default-content-wrapper a,
+main .section.cards-blog-container .default-content-wrapper a:any-link {
+  color: var(--brand-accent, #e87511);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+main .section.cards-blog-container .default-content-wrapper a::after {
+  content: none;
+}
+
+/* --- Cards grid: single column on mobile ---
+   (heading rules above use higher-specificity section selectors; the card
+   rules below target different elements, so the ordering warning is a false
+   positive here.) */
+/* stylelint-disable no-descending-specificity */
+.cards-blog ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.cards-blog li {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+.cards-blog .cards-blog-image picture,
+.cards-blog .cards-blog-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.cards-blog .cards-blog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px 16px;
+  flex: 1;
+}
+
+.cards-blog .cards-blog-body h2,
+.cards-blog .cards-blog-body h3 {
+  margin: 0;
+  color: #374151;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.cards-blog .cards-blog-body p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Read More — orange, pinned to the bottom */
+.cards-blog .cards-blog-body a,
+.cards-blog .cards-blog-body a:any-link {
+  margin-top: auto;
+  color: var(--brand-accent, #e87511);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cards-blog .cards-blog-body a::after {
+  content: none;
+}
+
+/* --- Desktop: featured card left (spans 2 rows), 2 stacked cards right --- */
+@media (width >= 900px) {
+  .cards-blog ul {
+    grid-template-columns: 1.2fr 1fr;
+    grid-auto-rows: 1fr;
+    align-items: stretch;
+  }
+
+  /* Featured card: left column, spans both rows, image-over-text. */
+  .cards-blog li.cards-blog-featured {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .cards-blog li.cards-blog-featured .cards-blog-image picture,
+  .cards-blog li.cards-blog-featured .cards-blog-image img {
+    aspect-ratio: 16 / 10;
+  }
+
+  .cards-blog li.cards-blog-featured .cards-blog-body h2,
+  .cards-blog li.cards-blog-featured .cards-blog-body h3 {
+    font-size: 22px;
+  }
+
+  /* Secondary cards: right column, horizontal (small image left, text right). */
+  .cards-blog li:not(.cards-blog-featured) {
+    grid-column: 2;
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .cards-blog li:not(.cards-blog-featured) .cards-blog-image {
+    flex: 0 0 40%;
+  }
+
+  .cards-blog li:not(.cards-blog-featured) .cards-blog-image picture,
+  .cards-blog li:not(.cards-blog-featured) .cards-blog-image img {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .cards-blog li:not(.cards-blog-featured) .cards-blog-body {
+    flex: 1;
+    padding: 8px 8px 8px 0;
+  }
+}
+
+/* stylelint-enable no-descending-specificity */

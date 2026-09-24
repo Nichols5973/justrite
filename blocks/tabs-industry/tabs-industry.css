@@ -1,0 +1,263 @@
+/*
+ * tabs-industry — "Industry Based Safety Signs & Labels" switcher.
+ * Visual design migrated from https://www.compliancesigns.com/ (.home-food-service).
+ * Values are exact computed styles from the source.
+ *
+ * Source design note: the ACTIVE tab is a filled dark-slate pill (rgb(55 65 81))
+ * with white text; inactive tabs are transparent with slate text. There is NO
+ * orange underline on the tab bar in the source — orange (brand accent) appears
+ * only on the panel's product-card CTAs. This matches the extracted computed
+ * styles (ground truth), which diverge from the verbal brief's "orange underline".
+ *
+ * Decorated DOM (from tabs-industry.js): the block builds
+ *   .tabs-industry
+ *     > .tabs-industry-list (role=tablist)  -> the tab bar (.tab-header in source)
+ *         > button.tabs-industry-tab        -> a tab trigger (.tab-trigger)
+ *     > .tabs-industry-panel                -> a switchable panel (featured tile + cards)
+ */
+
+/* --- Tab bar (source .tab-header) --- */
+.tabs-industry .tabs-industry-list {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  max-width: 100%;
+  margin: 0 0 24px;
+  padding: 0;
+  overflow-x: auto;
+}
+
+@media (width >= 900px) {
+  .tabs-industry .tabs-industry-list {
+    margin-bottom: 56px;
+  }
+}
+
+/* --- Tab trigger, inactive (source .tab-trigger) --- */
+.tabs-industry .tabs-industry-list button {
+  flex: 0 0 max-content;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  padding: 8px 16px;
+  background-color: transparent;
+  color: rgb(55 65 81);
+  font-family: var(--heading-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 19.2px;
+  text-transform: capitalize;
+  text-align: center;
+  text-overflow: unset;
+  overflow: unset;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tabs-industry .tabs-industry-list button p {
+  margin: 0;
+}
+
+.tabs-industry .tabs-industry-list button:hover {
+  color: var(--link-hover-color);
+}
+
+/* --- Tab trigger, active (source .tab-trigger.active): filled slate pill --- */
+.tabs-industry .tabs-industry-list button[aria-selected='true'] {
+  background-color: rgb(55 65 81);
+  color: rgb(255 255 255);
+  cursor: default;
+}
+
+.tabs-industry .tabs-industry-list button[aria-selected='true']:hover {
+  color: rgb(255 255 255);
+}
+
+/* --- Panel (source .tab-content): featured tile + product-card row --- */
+.tabs-industry .tabs-industry-panel {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
+.tabs-industry .tabs-industry-panel[aria-hidden='true'] {
+  display: none;
+}
+
+/*
+ * Panel content layout: the block JS (decorate) regroups the flat richtext run
+ * into a featured industry tile (.tabs-industry-featured) followed by product
+ * cards (.tabs-industry-card), all inside a .tabs-industry-cards row.
+ *
+ * Source layout (compliancesigns.com): a horizontal row where the FIRST cell is
+ * a tall dark featured photo tile (industry name overlaid + a filled orange
+ * "Shop All" button pinned to the bottom), followed by white bordered product
+ * cards (centered product image, "From $X" price, wrapping title, and an
+ * outlined orange "Select Options" button pinned to the bottom).
+ */
+
+/* Mobile-first: 2-up grid; equal-height cells. */
+.tabs-industry .tabs-industry-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* --- Product card: white, bordered, image / price / title / CTA stacked --- */
+.tabs-industry .tabs-industry-card {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.tabs-industry .tabs-industry-card > p,
+.tabs-industry .tabs-industry-card > h3 {
+  margin: 0 0 8px;
+}
+
+/* Product image: centered, contained, fixed viewport. */
+.tabs-industry .tabs-industry-card picture,
+.tabs-industry .tabs-industry-card img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  margin: 0 auto 12px;
+}
+
+/* "From $X.XX" price line. */
+.tabs-industry .tabs-industry-card .tabs-industry-price {
+  color: #3d4644;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* Product title wraps within the card (override the global link nowrap). */
+.tabs-industry .tabs-industry-card h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+.tabs-industry .tabs-industry-card h3 a {
+  display: inline;
+  overflow: visible;
+  color: #3d4644;
+  font: inherit;
+  white-space: normal;
+  text-overflow: clip;
+  text-decoration: none;
+}
+
+/* "Select Options" CTA: outlined box, orange text, pinned to the bottom. */
+.tabs-industry .tabs-industry-card > p:last-child {
+  margin-top: auto;
+  margin-bottom: 0;
+}
+
+.tabs-industry .tabs-industry-card > p:last-child a {
+  display: block;
+  width: 100%;
+  padding: 8px 0;
+  border: 1px solid #ccc;
+  color: var(--main-accent-color);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.tabs-industry .tabs-industry-card > p:last-child a:hover {
+  border-color: var(--main-accent-color);
+  background-color: var(--main-accent-color);
+  color: #fff;
+}
+
+/* --- Featured industry tile: dark photo, overlaid label + Shop All CTA --- */
+.tabs-industry .tabs-industry-featured {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 20px;
+  border: 0;
+  overflow: hidden;
+  min-height: 320px;
+  background-color: #1f2937;
+}
+
+/* The featured photo fills the tile. */
+.tabs-industry .tabs-industry-featured picture,
+.tabs-industry .tabs-industry-featured img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Dark gradient so the overlaid text is legible. */
+.tabs-industry .tabs-industry-featured::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, rgb(0 0 0 / 65%) 0%, rgb(0 0 0 / 10%) 55%, rgb(0 0 0 / 5%) 100%);
+}
+
+.tabs-industry .tabs-industry-featured-label {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 12px;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* "Shop All" — filled orange button. */
+.tabs-industry .tabs-industry-featured .tabs-industry-shop-all {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  padding: 10px 22px;
+  background-color: var(--main-accent-color);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tabs-industry .tabs-industry-featured .tabs-industry-shop-all:hover {
+  background-color: var(--brand-accent-hover, #cf6608);
+  color: #fff;
+}
+
+/* Neutralize the global chevron ::after on all panel links. */
+.tabs-industry .tabs-industry-card a::after,
+.tabs-industry .tabs-industry-featured a::after {
+  content: none;
+}
+
+/* --- Tablet: 3-up --- */
+@media (width >= 600px) {
+  .tabs-industry .tabs-industry-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* --- Desktop: featured tile + 4 product cards in one 5-column row --- */
+@media (width >= 900px) {
+  .tabs-industry .tabs-industry-cards {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}

@@ -1,46 +1,48 @@
-import { getMetadata } from '../../scripts/aem.js';
-import { loadFragment } from '../fragment/fragment.js';
-import { isAuthorEnvironment } from '../../scripts/scripts.js';
-
-import {
-  getLanguage, getSiteName, TAG_ROOT, PATH_PREFIX, fetchLanguageNavigation,
-} from '../../scripts/utils.js';
+// ComplianceSigns footer — content-first, generic (reads content/footer.plain.html)
 
 /**
- * loads and decorates the footer
- * @param {Element} block The footer block element
+ * Fetch the footer fragment. Metadata-independent dual-fetch:
+ * /content first (localhost / aem up), then root (DA/EDS production).
  */
+async function fetchFooter() {
+  let resp = await fetch('/content/footer.plain.html');
+  if (!resp.ok) resp = await fetch('/footer.plain.html');
+  if (!resp.ok) return null;
+  const html = await resp.text();
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp;
+}
+
 export default async function decorate(block) {
-  const footerMeta = getMetadata('footer');
-  const langCode = getLanguage();
-  const siteName = await getSiteName();
-  const isAuthor = isAuthorEnvironment();
-  let footerPath =`/${langCode}/footer`;
-
-  if(isAuthor){
-    footerPath = footerMeta
-    ? new URL(footerMeta, window.location).pathname
-    : `/content/${siteName}${PATH_PREFIX}/${langCode}/footer`;
-  }
-
-  /*
-  // load footer as fragment
-  const footerMeta = getMetadata('footer');
-  //const footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : '/footer';
-  const pathSegments = window.location.pathname.split('/').filter(Boolean);
-  //console.log("pathSegments footer: ", pathSegments);
-  const parentPath = pathSegments.length > 2 ? `/${pathSegments.slice(0, 3).join('/')}` : '/';
-  //console.log("parentPath footer: ", parentPath);
-  const footerPath = parentPath=='/' ? footerMeta ? new URL(footerMeta, window.location).pathname : '/footer' : footerMeta ? new URL(footerMeta, window.location).pathname : parentPath+'/footer';
-  //console.log("footerPath footer: ", footerPath);
-  */
-  
-  const fragment = await loadFragment(footerPath);
-
-  // decorate footer DOM
+  const fragment = await fetchFooter();
   block.textContent = '';
+
   const footer = document.createElement('div');
-  while (fragment.firstElementChild) footer.append(fragment.firstElementChild);
+  footer.className = 'footer-inner';
+
+  const sections = fragment ? [...fragment.children].filter((c) => c.tagName === 'DIV') : [];
+
+  // The last section is the copyright / legal bar; everything before is the main grid.
+  const legal = sections.length ? sections[sections.length - 1] : null;
+  const columns = sections.slice(0, Math.max(0, sections.length - 1));
+
+  const grid = document.createElement('div');
+  grid.className = 'footer-grid';
+  columns.forEach((col, i) => {
+    const c = document.createElement('div');
+    c.className = i === 0 ? 'footer-brand' : 'footer-col';
+    while (col.firstElementChild) c.append(col.firstElementChild);
+    grid.append(c);
+  });
+  footer.append(grid);
+
+  if (legal) {
+    const bar = document.createElement('div');
+    bar.className = 'footer-legal';
+    while (legal.firstElementChild) bar.append(legal.firstElementChild);
+    footer.append(bar);
+  }
 
   block.append(footer);
 }

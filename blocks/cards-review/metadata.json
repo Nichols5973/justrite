@@ -1,0 +1,15 @@
+{
+  "variantName": "cards-review",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "imagePattern": "none",
+    "density": "standard",
+    "purpose": "testimonial"
+  },
+  "contentPattern": "Text-only testimonial cards, each with a star rating, headline, quote, and reviewer name. No image.",
+  "usage": "Customer reviews row on a dark section background.",
+  "options": [],
+  "memberVariantIds": ["cards-review"]
+}

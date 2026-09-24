@@ -1,0 +1,15 @@
+{
+  "variantName": "cards-category",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "imagePattern": "thumbnail",
+    "density": "compact",
+    "purpose": "category-nav"
+  },
+  "contentPattern": "Dense grid of compact tiles, each a thumbnail image above a short label, linking to a category page. No description or price.",
+  "usage": "Shop-by-category navigation grid.",
+  "options": [],
+  "memberVariantIds": ["cards-category"]
+}

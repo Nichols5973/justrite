@@ -1,0 +1,15 @@
+{
+  "variantName": "cards-product",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "imagePattern": "product-photo",
+    "density": "standard",
+    "purpose": "product-listing"
+  },
+  "contentPattern": "Bordered product cards, each with a product image, title, price line, and a call-to-action button.",
+  "usage": "Best-sellers / product listing grid.",
+  "options": [],
+  "memberVariantIds": ["cards-product"]
+}
