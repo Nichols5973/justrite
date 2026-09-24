@@ -1,23 +1,76 @@
 /*
- * cards-review — customer testimonial cards.
+ * cards-review — customer testimonials on the dark-blue Reviews section.
  *
- * Three white testimonial cards in a row, sitting on the navy-blue review
- * section (.section.navy-blue → #002d4c). Each card is text-only: a star
- * rating, a headline, a quote, and the reviewer name.
+ * Live layout: a full-width navy section (#004579). On the left an intro column
+ * ("Reviews Are In" + description + orange "View All Reviews" button); to the
+ * right a row of white testimonial cards. Each card: headline, then an orange
+ * star rating, then the quote and reviewer name.
  *
- * Source note: on compliancesigns.com the Trustpilot review-card slider is
- * disabled (showTrustPilot:false), so the cards do not render in the live DOM
- * and no per-card computed styles exist to extract. The section background,
- * heading (white, weight 500), intro text (white) and orange CTA WERE
- * extracted from source and drive the surrounding treatment; the white cards
- * are built to read cleanly on that navy field using established brand tokens
- * (--dark-color #002d4c, --main-accent-color #e87511, --text-color #222).
- *
- * Decorated DOM (from blocks/cards-review/cards-review.js):
- *   .cards-review > ul > li > .cards-review-body  (one body cell per card,
- *   stacking rating / headline / quote / reviewer as paragraphs + heading)
+ * The intro is section default content (.default-content-wrapper); the cards
+ * are the .cards-review block. The section (.cards-review-container) lays them
+ * out side-by-side.
  */
 
+/* --- Section: navy field, intro-left + cards-right --- */
+main .section.cards-review-container {
+  background-color: #004579;
+  margin: 0;
+  padding: 40px 0;
+}
+
+main .section.cards-review-container > div {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Intro column (heading + copy + button) */
+main .section.cards-review-container .default-content-wrapper {
+  color: #fff;
+}
+
+main .section.cards-review-container .default-content-wrapper h2 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+main .section.cards-review-container .default-content-wrapper p {
+  margin: 0 0 16px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Orange "View All Reviews" button */
+main .section.cards-review-container .default-content-wrapper a,
+main .section.cards-review-container .default-content-wrapper a:any-link {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 2px;
+  background-color: var(--brand-accent, #e87511);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+main .section.cards-review-container .default-content-wrapper a::after {
+  content: none;
+}
+
+main .section.cards-review-container .default-content-wrapper a:hover {
+  background-color: var(--brand-accent-hover, #cf6608);
+  color: #fff;
+}
+
+/* --- Cards ---
+   (intro rules above use higher-specificity section selectors; the card rules
+   below target different elements, so the descending-specificity ordering
+   warning is a false positive here.) */
+/* stylelint-disable no-descending-specificity */
 .cards-review ul {
   list-style: none;
   margin: 0;
@@ -34,13 +87,12 @@
 .cards-review .cards-review-body {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  padding: 24px;
+  padding: 20px;
   background-color: #fff;
-  color: var(--text-color); /* #222 */
-  border-radius: var(--border-radius-base); /* 4px */
-  box-shadow: 0 4px 16px rgb(0 0 0 / 18%);
+  color: #374151;
+  border-radius: 2px;
   text-align: left;
 }
 
@@ -51,58 +103,62 @@
   margin: 0;
 }
 
-/* Quote body (base paragraph — declared before the positional overrides) */
-.cards-review .cards-review-body p {
-  color: var(--text-color); /* #222 — self-contained, never inherits section white */
+/* Headline (first) */
+.cards-review .cards-review-body h2,
+.cards-review .cards-review-body h3,
+.cards-review .cards-review-body h4 {
+  color: #374151;
   font-size: 16px;
-  line-height: 1.6;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
-/* Star rating — first paragraph of each card renders as the rating line */
-.cards-review .cards-review-body p:first-child {
-  color: var(--main-accent-color); /* #e87511 */
-  font-size: 18px;
+/* Star rating — orange, directly under the headline */
+.cards-review .cards-review-body .cards-review-stars {
+  color: var(--brand-accent, #e87511);
+  font-size: 16px;
   line-height: 1;
   letter-spacing: 2px;
 }
 
-/* Headline */
-.cards-review .cards-review-body h2,
-.cards-review .cards-review-body h3,
-.cards-review .cards-review-body h4 {
-  color: var(--dark-color); /* #002d4c */
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.25;
+/* Quote body */
+.cards-review .cards-review-body p {
+  color: #374151;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
-/* Reviewer name — last paragraph, emphasised */
+/* Reviewer name — emphasised */
 .cards-review .cards-review-body p:last-child {
   margin-top: 4px;
-  color: var(--dark-color);
-  font-size: 15px;
   font-weight: 700;
+  font-style: normal;
 }
 
-/* Links inside a card keep the brand link colour, no button chrome */
-.cards-review .cards-review-body a,
-.cards-review .cards-review-body a:any-link {
-  color: var(--link-color);
-  font-size: inherit;
-  white-space: normal;
+.cards-review .cards-review-body p:last-child em {
+  font-style: normal;
 }
 
-.cards-review .cards-review-body a:hover {
-  color: var(--link-hover-color);
-}
-
+/* --- Desktop: intro column left, three cards to the right --- */
 @media (width >= 900px) {
+  main .section.cards-review-container > div {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+  }
+
+  main .section.cards-review-container .default-content-wrapper {
+    flex: 0 0 260px;
+  }
+
+  main .section.cards-review-container .cards-review-wrapper {
+    flex: 1;
+  }
+
   .cards-review ul {
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-  }
-
-  .cards-review .cards-review-body {
-    padding: 28px;
+    gap: 20px;
   }
 }
+
+/* stylelint-enable no-descending-specificity */
