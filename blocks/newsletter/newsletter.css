@@ -17,7 +17,15 @@ main .section.newsletter-container {
   background-color: #002d4c;
 }
 
-/* The default-content picture (background photo) fills the section. */
+/* The default-content picture (background photo) fills the whole section,
+   behind everything. The <p> wrapping the picture is pulled full-bleed too. */
+main .section.newsletter-container .default-content-wrapper > p:has(picture) {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  z-index: 0;
+}
+
 main .section.newsletter-container .default-content-wrapper picture,
 main .section.newsletter-container .default-content-wrapper picture img {
   position: absolute;
@@ -26,7 +34,6 @@ main .section.newsletter-container .default-content-wrapper picture img {
   height: 100%;
   margin: 0;
   object-fit: cover;
-  z-index: 0;
 }
 
 /* kill the global image "shine" sweep on the background */
@@ -34,7 +41,8 @@ main .section.newsletter-container .default-content-wrapper picture::before {
   content: none;
 }
 
-/* Dark scrim so overlaid text stays legible. */
+/* Dark scrim so overlaid text stays legible — sits above the image (z 0) but
+   below the text content (z 2). */
 main .section.newsletter-container .default-content-wrapper picture::after {
   content: "";
   position: absolute;
@@ -43,10 +51,9 @@ main .section.newsletter-container .default-content-wrapper picture::after {
   z-index: 1;
 }
 
-/* Overlaid text (heading + copy) sits above the image. */
+/* Overlaid text (heading + copy) sits above the image + scrim. */
 main .section.newsletter-container .default-content-wrapper {
   position: relative;
-  z-index: 2;
   max-width: 900px;
   margin: 0 auto;
   padding: 0 24px;
@@ -54,7 +61,16 @@ main .section.newsletter-container .default-content-wrapper {
   text-align: center;
 }
 
+/* Heading/copy explicitly above the scrim (scrim is z-index 1). */
+main .section.newsletter-container .default-content-wrapper h2,
+main .section.newsletter-container .default-content-wrapper p:not(:has(picture)) {
+  position: relative;
+  z-index: 2;
+}
+
 main .section.newsletter-container .default-content-wrapper h2 {
+  position: relative;
+  z-index: 2;
   margin: 0 0 12px;
   color: #fff;
   font-size: 30px;
@@ -62,7 +78,7 @@ main .section.newsletter-container .default-content-wrapper h2 {
   line-height: 1.2;
 }
 
-main .section.newsletter-container .default-content-wrapper p {
+main .section.newsletter-container .default-content-wrapper p:not(:has(picture)) {
   margin: 0 0 8px;
   color: #fff;
 }
