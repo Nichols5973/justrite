@@ -116,7 +116,24 @@ var CustomImportScript = (() => {
       return;
     }
     const block = WebImporter.Blocks.createBlock(document2, { name: "cards-category", cells });
-    element.replaceWith(block);
+    const frag = document2.createDocumentFragment();
+    const srcH1 = element.querySelector("h1");
+    const h1 = document2.createElement("h1");
+    h1.textContent = srcH1 ? srcH1.textContent.replace(/\s+/g, " ").trim() : "Safety Signs, Tags, Labels, and 5S Products Manufactured in the USA";
+    frag.appendChild(h1);
+    const srcH2 = element.querySelector("h2");
+    const h2 = document2.createElement("h2");
+    h2.textContent = srcH2 ? srcH2.textContent.replace(/\s+/g, " ").trim() : "Shop by Category";
+    frag.appendChild(h2);
+    frag.appendChild(block);
+    const viewAll = [...element.querySelectorAll("a[href]")].find((a) => /view all/i.test(a.textContent));
+    const vaLink = document2.createElement("a");
+    vaLink.href = viewAll ? viewAll.getAttribute("href") : "https://www.compliancesigns.com/p/safety-5s-product-types";
+    vaLink.textContent = viewAll ? viewAll.textContent.replace(/\s+/g, " ").trim() : "View All Categories";
+    const vaP = document2.createElement("p");
+    vaP.appendChild(vaLink);
+    frag.appendChild(vaP);
+    element.replaceWith(frag);
   }
 
   // tools/importer/parsers/cards-product.js

@@ -57,5 +57,38 @@ export default function parse(element, { document }) {
   }
 
   const block = WebImporter.Blocks.createBlock(document, { name: 'cards-category', cells });
-  element.replaceWith(block);
+
+  // Preserve the section's intro headings above the block — the page H1
+  // ("Safety Signs, Tags, Labels, and 5S Products Manufactured in the USA")
+  // and the H2 ("Shop by Category") — plus the "View All Categories" link
+  // below. These are section default content that would otherwise be lost when
+  // the .home-shop-category element is replaced. Static fallbacks match the
+  // source in case the nodes don't scrape.
+  const frag = document.createDocumentFragment();
+
+  const srcH1 = element.querySelector('h1');
+  const h1 = document.createElement('h1');
+  h1.textContent = srcH1
+    ? srcH1.textContent.replace(/\s+/g, ' ').trim()
+    : 'Safety Signs, Tags, Labels, and 5S Products Manufactured in the USA';
+  frag.appendChild(h1);
+
+  const srcH2 = element.querySelector('h2');
+  const h2 = document.createElement('h2');
+  h2.textContent = srcH2 ? srcH2.textContent.replace(/\s+/g, ' ').trim() : 'Shop by Category';
+  frag.appendChild(h2);
+
+  frag.appendChild(block);
+
+  // "View All Categories" link below the grid, if present in the source.
+  const viewAll = [...element.querySelectorAll('a[href]')]
+    .find((a) => /view all/i.test(a.textContent));
+  const vaLink = document.createElement('a');
+  vaLink.href = viewAll ? viewAll.getAttribute('href') : 'https://www.compliancesigns.com/p/safety-5s-product-types';
+  vaLink.textContent = viewAll ? viewAll.textContent.replace(/\s+/g, ' ').trim() : 'View All Categories';
+  const vaP = document.createElement('p');
+  vaP.appendChild(vaLink);
+  frag.appendChild(vaP);
+
+  element.replaceWith(frag);
 }
