@@ -7,6 +7,7 @@
  * Pipeline per page:  .plain.html  →  wrap in <main>  →  html2md  →  md2jcr
  *   →  .content.xml under jcr_root/content/justrite/<path>/
  *
+ * Images are downloaded and packaged as DAM assets under /content/dam/justrite.
  * Also emits the vault metadata (filter.xml + properties.xml) and zips the
  * whole thing into tools/package/dist/<pkg>.zip, ready for AEM Package Manager.
  *
@@ -107,7 +108,7 @@ const HTML2MD_DIR = '/home/node/.excat-marketplaces/excat-marketplace/excat/tool
 const SITE_ROOT = '/content/justrite';
 const PKG_GROUP = 'compliancesigns';
 const PKG_NAME = 'compliancesigns-content';
-const PKG_VERSION = '1.0.0';
+const PKG_VERSION = '1.1.0';
 
 const CONTENT_DIR = 'content';
 
@@ -164,6 +165,125 @@ function absolutizeLocalImages(html) {
 
 const DIST = path.join(WORKSPACE, 'tools/package/dist');
 const STAGE = path.join(DIST, PKG_NAME);
+const IMAGE_CACHE = path.join(DIST, 'image-cache');
+
+/**
+ * AEM only renders image fields that reference DAM assets; an external URL is
+ * shown as link text. Every source-site image is therefore downloaded, packaged
+ * as a DAM asset under DAM_ROOT, and the pages are repointed at it.
+ */
+const DAM_ROOT = '/content/dam/justrite';
+const EXTERNAL_IMAGE = /https?:\/\/(?:media|www)\.compliancesigns\.com\/[^"&\s<>]+?\.(?:png|jpe?g|gif|webp|svg)/gi;
+const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml' };
+
+/**
+ * Source URL -> DAM path, mirroring the source folders. Drops the leading
+ * "media" segment and Magento's catalog cache hash / single-letter shards.
+ */
+function damPathFor(url) {
+  const segs = decodeURIComponent(new URL(url).pathname).split('/').filter(Boolean);
+  if (segs[0] === 'media') segs.shift();
+  const out = [];
+  for (let i = 0; i < segs.length; i += 1) {
+    if (segs[i] === 'cache' && i < segs.length - 1) { i += 1; continue; }
+    if (segs[i].length === 1 && i < segs.length - 1) continue;
+    out.push(segs[i].replace(/[^A-Za-z0-9._-]+/g, '-'));
+  }
+  return `${DAM_ROOT}/${out.join('/')}`;
+}
+
+/** Pixel size from the image header (PNG, GIF, JPEG); null if unknown. */
+function imageSize(buf) {
+  if (buf.length > 24 && buf.readUInt32BE(0) === 0x89504e47) {
+    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+  }
+  if (buf.length > 10 && buf.toString('ascii', 0, 3) === 'GIF') {
+    return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
+  }
+  if (buf[0] === 0xff && buf[1] === 0xd8) {
+    let i = 2;
+    while (i + 9 < buf.length) {
+      if (buf[i] !== 0xff) { i += 1; continue; }
+      const marker = buf[i + 1];
+      const len = buf.readUInt16BE(i + 2);
+      if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) {
+        return { width: buf.readUInt16BE(i + 7), height: buf.readUInt16BE(i + 5) };
+      }
+      i += 2 + len;
+    }
+  }
+  return null;
+}
+
+/** Download a source image once (cached under dist/, which is gitignored). */
+async function fetchImage(url, damPath) {
+  const cached = path.join(IMAGE_CACHE, damPath);
+  if (existsSync(cached)) return readFile(cached);
+  const resp = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const buf = Buffer.from(await resp.arrayBuffer());
+  await mkdir(path.dirname(cached), { recursive: true });
+  await writeFile(cached, buf);
+  return buf;
+}
+
+const FOLDER_XML = (title) => `<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="sling:OrderedFolder">
+    <jcr:content
+        jcr:primaryType="nt:unstructured"
+        jcr:title="${title}"/>
+</jcr:root>
+`;
+
+/**
+ * Write one image as a dam:Asset in vault layout: the asset node, its
+ * original rendition binary, and the rendition's mime type.
+ */
+async function writeDamAsset(damPath, buf) {
+  const ext = damPath.split('.').pop().toLowerCase();
+  const mime = MIME[ext] || 'application/octet-stream';
+  const size = imageSize(buf);
+  const dims = size ? `\n            tiff:ImageLength="{Long}${size.height}"\n            tiff:ImageWidth="{Long}${size.width}"` : '';
+  const assetDir = path.join(STAGE, 'jcr_root', damPath.replace(/^\//, ''));
+  const renditions = path.join(assetDir, '_jcr_content', 'renditions');
+  await mkdir(path.join(renditions, 'original.dir'), { recursive: true });
+  await writeFile(path.join(assetDir, '.content.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:tiff="http://ns.adobe.com/tiff/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:dam="http://www.day.com/dam/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent">
+        <metadata
+            dc:format="${mime}"
+            jcr:primaryType="nt:unstructured"${dims}/>
+        <related jcr:primaryType="nt:unstructured"/>
+    </jcr:content>
+</jcr:root>
+`, 'utf-8');
+  await writeFile(path.join(renditions, 'original'), buf);
+  await writeFile(path.join(renditions, 'original.dir', '.content.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:file">
+    <jcr:content
+        jcr:mimeType="${mime}"
+        jcr:primaryType="nt:resource"/>
+</jcr:root>
+`, 'utf-8');
+}
+
+/** DAM folder nodes (sling:OrderedFolder) from DAM_ROOT down to each asset. */
+async function writeDamFolders(damPaths) {
+  const folders = new Set();
+  damPaths.forEach((p) => {
+    const segs = p.split('/');
+    for (let i = DAM_ROOT.split('/').length; i < segs.length; i += 1) folders.add(segs.slice(0, i).join('/'));
+  });
+  for (const folder of folders) {
+    const dir = path.join(STAGE, 'jcr_root', folder.replace(/^\//, ''));
+    await mkdir(dir, { recursive: true });
+    await writeFile(path.join(dir, '.content.xml'), FOLDER_XML(folder.split('/').pop()), 'utf-8');
+  }
+}
 
 async function loadHtml2md() {
   const mod = await import(path.join(HTML2MD_DIR, 'src/index.js'));
@@ -262,6 +382,7 @@ async function main() {
   const filterRoots = [];
 
   const failures = [];
+  const images = new Map(); // DAM path -> source URL
   const pages = await discoverPages();
   console.log(`Found ${pages.length} page(s) in ${CONTENT_DIR}/\n`);
   for (const page of pages) {
@@ -291,6 +412,16 @@ async function main() {
       continue;
     }
 
+    // Repoint source-site images at their packaged DAM assets.
+    xml = xml.replace(EXTERNAL_IMAGE, (url) => {
+      const damPath = damPathFor(url);
+      if (images.has(damPath) && images.get(damPath) !== url) {
+        throw new Error(`DAM path collision: ${url} and ${images.get(damPath)} → ${damPath}`);
+      }
+      images.set(damPath, url);
+      return damPath;
+    });
+
     const jcrDir = path.join(STAGE, 'jcr_root', SITE_ROOT.replace(/^\//, ''), page.jcrPath);
     await mkdir(jcrDir, { recursive: true });
     await writeFile(path.join(jcrDir, '.content.xml'), xml, 'utf-8');
@@ -302,10 +433,26 @@ async function main() {
     failures.forEach((f) => console.log(`   - ${f.page}: ${f.error}`));
   }
 
-  // vault meta: filter.xml
+  // DAM assets for every referenced image.
+  console.log(`\nPackaging ${images.size} image(s) as DAM assets under ${DAM_ROOT}`);
+  const imageFailures = [];
+  for (const [damPath, url] of images) {
+    try {
+      await writeDamAsset(damPath, await fetchImage(url, damPath));
+    } catch (e) {
+      imageFailures.push(damPath);
+      console.log(`✗ ${url} — ${e.message}`);
+    }
+  }
+  await writeDamFolders([...images.keys()]);
+
+  // vault meta: filter.xml. Pages are replaced; the DAM root is "update" so
+  // assets authors add later aren't removed by a re-install.
   const metaDir = path.join(STAGE, 'META-INF/vault');
   await mkdir(metaDir, { recursive: true });
-  const filterXml = `<?xml version="1.0" encoding="UTF-8"?>\n<workspaceFilter version="1.0">\n${filterRoots.map((r) => `  <filter root="${r}"/>`).join('\n')}\n</workspaceFilter>\n`;
+  const filterEntries = filterRoots.map((r) => `  <filter root="${r}"/>`);
+  if (images.size) filterEntries.push(`  <filter root="${DAM_ROOT}" mode="update"/>`);
+  const filterXml = `<?xml version="1.0" encoding="UTF-8"?>\n<workspaceFilter version="1.0">\n${filterEntries.join('\n')}\n</workspaceFilter>\n`;
   await writeFile(path.join(metaDir, 'filter.xml'), filterXml, 'utf-8');
 
   // vault meta: properties.xml
@@ -322,6 +469,10 @@ async function main() {
   }
   console.log(`\n📦 Package built: ${path.relative(WORKSPACE, zipPath)}`);
   console.log(`   Roots: ${filterRoots.length} pages under ${SITE_ROOT}`);
+  console.log(`   Assets: ${images.size - imageFailures.length} images under ${DAM_ROOT}`);
+  if (imageFailures.length) {
+    console.log(`   Note: ${imageFailures.length} image(s) failed to download and are missing.`);
+  }
   if (failures.length) {
     console.log(`   Note: ${failures.length} page(s) omitted (see above).`);
   }
