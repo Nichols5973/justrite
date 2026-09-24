@@ -349,25 +349,25 @@ var CustomImportScript = (() => {
   // tools/importer/parsers/cards-blog.js
   var STATIC_ARTICLES = [
     {
-      img: "https://media.compliancesigns.com/media/wysiwyg/osha-authorized-personnel-only-sign-one-1336_1000.jpg",
-      alt: "Safe + Sound Week Helps Employers Improve Workplace Safety",
-      title: "Safe + Sound Week Helps Employers Improve Workplace Safety",
-      desc: "OSHA's Safe + Sound campaign helps employers keep workplaces safe and healthy.",
-      href: "https://www.compliancesigns.com/blog/oshas-safe-and-sound-campaign-helps-employers-keep-workplaces-safe-and-healthy/"
+      img: "https://www.compliancesigns.com/media/wysiwyg/Navigation/resource-1.jpg",
+      alt: "Make Your 5S Red Tag Program Successful",
+      title: "Make Your 5S Red Tag Program Successful",
+      desc: "The first step in 5S is \u201CSort,\u201D and it doesn\u2019t have to be difficult. With an effective 5S red tag strategy, you can clear out the \u2018dirt\u2019 and cut waste from your facility.",
+      href: "https://www.compliancesigns.com/blog/improve-your-5s-red-tag-program/"
     },
     {
-      img: "https://media.compliancesigns.com/media/wysiwyg/osha-flammable-sign-ode-15544_1000.jpg",
-      alt: "5 Steps for Effective Safety Conversations",
-      title: "5 Steps for Effective Safety Conversations",
-      desc: "Follow these 5 steps for effective safety conversations in your workplace.",
-      href: "https://www.compliancesigns.com/blog/follow-these-5-steps-for-effective-safety-conversations/"
+      img: "https://www.compliancesigns.com/media/wysiwyg/Navigation/resource-2.jpg",
+      alt: "September is National Preparedness Month",
+      title: "September is National Preparedness Month",
+      desc: "If an emergency occurred, how would you protect the most important people in your life \u2013 and your business? Disasters don\u2019t plan ahead\u2026 but you can!",
+      href: "https://www.compliancesigns.com/blog/september-is-national-preparedness-month/"
     },
     {
-      img: "https://media.compliancesigns.com/media/wysiwyg/osha-electrical-high-voltage-sign-ode-3686_1000.jpg",
-      alt: "The Top 5 CNC Machining Hazards and the Safety Signs That Keep Workers Safe",
-      title: "The Top 5 CNC Machining Hazards and the Safety Signs That Keep Workers Safe",
-      desc: "Learn the top CNC machining hazards and the required safety signs that protect workers.",
-      href: "https://www.compliancesigns.com/blog/top-cnc-machining-hazards-required-safety-signs/"
+      img: "https://www.compliancesigns.com/media/wysiwyg/Navigation/resource-3.jpg",
+      alt: "Top 10 OSHA Violations of 2026",
+      title: "Top 10 OSHA Violations of 2026",
+      desc: "The list of top OSHA citations in 2026 may look familiar - but some standards took big jumps. See the details to find out where to focus in 2027.",
+      href: "https://www.compliancesigns.com/blog/top-10-osha-violations-of-2026/"
     }
   ];
   function parse6(element, { document: document2 }) {
@@ -401,6 +401,12 @@ var CustomImportScript = (() => {
     const h = document2.createElement("h2");
     h.textContent = heading ? heading.textContent.trim() : "News & Resources";
     frag.appendChild(h);
+    const viewAllP = document2.createElement("p");
+    const viewAll = document2.createElement("a");
+    viewAll.href = "https://www.compliancesigns.com/blog/";
+    viewAll.textContent = "View All";
+    viewAllP.appendChild(viewAll);
+    frag.appendChild(viewAllP);
     frag.appendChild(block);
     element.replaceWith(frag);
   }

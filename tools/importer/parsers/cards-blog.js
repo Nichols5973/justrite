@@ -12,27 +12,30 @@
  * section-level default content (imported separately); this block emits the
  * article cards. cards (container) block: one row per article [image, text].
  */
+// Featured article (large card, left) + two secondary articles (stacked, right),
+// matching the live News & Resources layout. Images use the real blog resource
+// thumbnails (media/wysiwyg/Navigation/resource-N.jpg), not product photos.
 const STATIC_ARTICLES = [
   {
-    img: 'https://media.compliancesigns.com/media/wysiwyg/osha-authorized-personnel-only-sign-one-1336_1000.jpg',
-    alt: 'Safe + Sound Week Helps Employers Improve Workplace Safety',
-    title: 'Safe + Sound Week Helps Employers Improve Workplace Safety',
-    desc: "OSHA's Safe + Sound campaign helps employers keep workplaces safe and healthy.",
-    href: 'https://www.compliancesigns.com/blog/oshas-safe-and-sound-campaign-helps-employers-keep-workplaces-safe-and-healthy/',
+    img: 'https://www.compliancesigns.com/media/wysiwyg/Navigation/resource-1.jpg',
+    alt: 'Make Your 5S Red Tag Program Successful',
+    title: 'Make Your 5S Red Tag Program Successful',
+    desc: 'The first step in 5S is “Sort,” and it doesn’t have to be difficult. With an effective 5S red tag strategy, you can clear out the ‘dirt’ and cut waste from your facility.',
+    href: 'https://www.compliancesigns.com/blog/improve-your-5s-red-tag-program/',
   },
   {
-    img: 'https://media.compliancesigns.com/media/wysiwyg/osha-flammable-sign-ode-15544_1000.jpg',
-    alt: '5 Steps for Effective Safety Conversations',
-    title: '5 Steps for Effective Safety Conversations',
-    desc: 'Follow these 5 steps for effective safety conversations in your workplace.',
-    href: 'https://www.compliancesigns.com/blog/follow-these-5-steps-for-effective-safety-conversations/',
+    img: 'https://www.compliancesigns.com/media/wysiwyg/Navigation/resource-2.jpg',
+    alt: 'September is National Preparedness Month',
+    title: 'September is National Preparedness Month',
+    desc: 'If an emergency occurred, how would you protect the most important people in your life – and your business? Disasters don’t plan ahead… but you can!',
+    href: 'https://www.compliancesigns.com/blog/september-is-national-preparedness-month/',
   },
   {
-    img: 'https://media.compliancesigns.com/media/wysiwyg/osha-electrical-high-voltage-sign-ode-3686_1000.jpg',
-    alt: 'The Top 5 CNC Machining Hazards and the Safety Signs That Keep Workers Safe',
-    title: 'The Top 5 CNC Machining Hazards and the Safety Signs That Keep Workers Safe',
-    desc: 'Learn the top CNC machining hazards and the required safety signs that protect workers.',
-    href: 'https://www.compliancesigns.com/blog/top-cnc-machining-hazards-required-safety-signs/',
+    img: 'https://www.compliancesigns.com/media/wysiwyg/Navigation/resource-3.jpg',
+    alt: 'Top 10 OSHA Violations of 2026',
+    title: 'Top 10 OSHA Violations of 2026',
+    desc: 'The list of top OSHA citations in 2026 may look familiar - but some standards took big jumps. See the details to find out where to focus in 2027.',
+    href: 'https://www.compliancesigns.com/blog/top-10-osha-violations-of-2026/',
   },
 ];
 
@@ -72,14 +75,22 @@ export default function parse(element, { document }) {
 
   const block = WebImporter.Blocks.createBlock(document, { name: 'cards-blog', cells });
 
-  // Preserve the "News & Resources" section heading if present in the matched
-  // element; the dynamic blog section often renders without it, so fall back to
-  // a static heading so the section is always labelled.
+  // Preserve the "News & Resources" section heading + a "View All" link
+  // (top-right on the live site) above the cards. The dynamic blog section
+  // often renders without them, so fall back to static values.
   const heading = element.querySelector('h1, h2, h3');
   const frag = document.createDocumentFragment();
   const h = document.createElement('h2');
   h.textContent = heading ? heading.textContent.trim() : 'News & Resources';
   frag.appendChild(h);
+
+  const viewAllP = document.createElement('p');
+  const viewAll = document.createElement('a');
+  viewAll.href = 'https://www.compliancesigns.com/blog/';
+  viewAll.textContent = 'View All';
+  viewAllP.appendChild(viewAll);
+  frag.appendChild(viewAllP);
+
   frag.appendChild(block);
   element.replaceWith(frag);
 }

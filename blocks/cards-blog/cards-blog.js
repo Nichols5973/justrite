@@ -13,9 +13,11 @@ import { moveInstrumentation } from '../../scripts/scripts.js';
 export default function decorate(block) {
   const ul = document.createElement('ul');
 
-  [...block.children].forEach((row) => {
+  [...block.children].forEach((row, cardIndex) => {
     const li = document.createElement('li');
     moveInstrumentation(row, li);
+    // First card is the large featured article (left); the rest stack (right).
+    if (cardIndex === 0) li.classList.add('cards-blog-featured');
     while (row.firstElementChild) li.append(row.firstElementChild);
 
     [...li.children].forEach((div, index) => {
