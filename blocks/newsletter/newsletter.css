@@ -111,6 +111,7 @@ main .section.newsletter-container .default-content-wrapper p:not(:has(picture))
   gap: 12px;
 }
 
+/* Mobile: fields stack; desktop: one row across (see media query). */
 .newsletter .newsletter-row {
   display: flex;
   flex-wrap: wrap;
@@ -136,8 +137,7 @@ main .section.newsletter-container .default-content-wrapper p:not(:has(picture))
 }
 
 .newsletter .newsletter-submit {
-  align-self: center;
-  margin-top: 4px;
+  flex: 0 0 auto;
   padding: 12px 40px;
   border: 0;
   border-radius: 4px;
@@ -160,11 +160,21 @@ main .section.newsletter-container .default-content-wrapper p:not(:has(picture))
   text-align: center;
 }
 
-/* --- Desktop: two fields per row (matches the live 2x2 grid) --- */
+/* --- Desktop: all four fields + submit on ONE row across --- */
 @media (width >= 600px) {
   main .section.newsletter-container .default-content-wrapper h2 {
     font-size: 40px;
     line-height: 48px;
+  }
+
+  /* widen the block so the single row has room */
+  .newsletter {
+    max-width: 960px;
+  }
+
+  .newsletter .newsletter-row {
+    flex-wrap: nowrap;
+    align-items: center;
   }
 
   .newsletter .newsletter-row input,

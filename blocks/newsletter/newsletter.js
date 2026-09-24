@@ -64,14 +64,10 @@ export default function decorate(block) {
   form.action = action;
   form.setAttribute('novalidate', '');
 
-  // Row 1: First Name + Last Name
-  const row1 = document.createElement('div');
-  row1.className = 'newsletter-row';
-  row1.append(textField('firstname', 'First Name'), textField('lastname', 'Last Name'));
+  // All four fields + submit on a single row.
+  const row = document.createElement('div');
+  row.className = 'newsletter-row';
 
-  // Row 2: Email + Industry
-  const row2 = document.createElement('div');
-  row2.className = 'newsletter-row';
   const email = textField('email', 'Email*', 'email');
   const select = document.createElement('select');
   select.name = 'industry';
@@ -83,14 +79,20 @@ export default function decorate(block) {
     if (i === 0) { opt.disabled = true; opt.selected = true; }
     select.append(opt);
   });
-  row2.append(email, select);
 
   const button = document.createElement('button');
   button.type = 'submit';
   button.className = 'newsletter-submit';
   button.textContent = cta;
 
-  form.append(row1, row2, button);
+  row.append(
+    textField('firstname', 'First Name'),
+    textField('lastname', 'Last Name'),
+    email,
+    select,
+    button,
+  );
+  form.append(row);
 
   // Demo-only: prevent navigation and show a confirmation.
   form.addEventListener('submit', (e) => {
