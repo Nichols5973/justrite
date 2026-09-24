@@ -152,13 +152,12 @@ main .section.cards-review-container .default-content-wrapper:first-child a:hove
 }
 
 /* Trustpilot rating line below the cards — full-width, centered, white text,
-   yellow "5,000+ reviews" link (NOT a button), small inline Trustpilot logo. */
-main .section.cards-review-container .default-content-wrapper:has(.cards-review-rating-line) {
+   yellow "5,000+ reviews" link (NOT a button), small inline Trustpilot logo.
+   NOTE: the importer strips custom classes from default content, so this is
+   targeted structurally: the review section's LAST default-content wrapper
+   (the one containing the Trustpilot <picture>). */
+main .section.cards-review-container .default-content-wrapper:has(picture) {
   flex: 1 1 100%;
-  text-align: center;
-}
-
-main .section.cards-review-container .cards-review-rating-line {
   margin: 8px 0 0;
   color: #fff;
   font-size: 16px;
@@ -166,9 +165,14 @@ main .section.cards-review-container .cards-review-rating-line {
   text-align: center;
 }
 
+main .section.cards-review-container .default-content-wrapper:has(picture) p {
+  color: #fff;
+  text-align: center;
+}
+
 /* Yellow text link — override the intro's orange-button treatment. */
-main .section.cards-review-container .cards-review-rating-line a,
-main .section.cards-review-container .cards-review-rating-line a:any-link {
+main .section.cards-review-container .default-content-wrapper:has(picture) a,
+main .section.cards-review-container .default-content-wrapper:has(picture) a:any-link {
   display: inline;
   padding: 0;
   border-radius: 0;
@@ -179,18 +183,18 @@ main .section.cards-review-container .cards-review-rating-line a:any-link {
   white-space: normal;
 }
 
-main .section.cards-review-container .cards-review-rating-line a::after {
+main .section.cards-review-container .default-content-wrapper:has(picture) a::after {
   content: none;
 }
 
-main .section.cards-review-container .cards-review-rating-line a:hover {
+main .section.cards-review-container .default-content-wrapper:has(picture) a:hover {
   background: none;
   color: #f5dd8d;
 }
 
-/* Small Trustpilot logo, inline after the text. */
-main .section.cards-review-container .cards-review-rating-line picture,
-main .section.cards-review-container .cards-review-rating-line img {
+/* Small Trustpilot logo, inline with the sentence. */
+main .section.cards-review-container .default-content-wrapper:has(picture) picture,
+main .section.cards-review-container .default-content-wrapper:has(picture) img {
   display: inline-block;
   height: 14px;
   width: auto;
@@ -199,7 +203,7 @@ main .section.cards-review-container .cards-review-rating-line img {
 }
 
 /* kill the global image shine sweep on the small logo */
-main .section.cards-review-container .cards-review-rating-line picture::before {
+main .section.cards-review-container .default-content-wrapper:has(picture) picture::before {
   content: none;
 }
 
