@@ -33,6 +33,15 @@ export default async function decorate(block) {
     const c = document.createElement('div');
     c.className = i === 0 ? 'footer-brand' : 'footer-col';
     while (col.firstElementChild) c.append(col.firstElementChild);
+    // AEM content stores the brand logo as a plain image; link it to the homepage.
+    const logo = i === 0 ? c.querySelector('picture, img') : null;
+    if (logo && !logo.closest('a')) {
+      const link = document.createElement('a');
+      link.href = '/';
+      link.setAttribute('aria-label', 'Home');
+      logo.replaceWith(link);
+      link.append(logo);
+    }
     grid.append(c);
   });
   footer.append(grid);
