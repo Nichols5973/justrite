@@ -11,45 +11,54 @@
  * out side-by-side.
  */
 
-/* --- Section: navy field, intro-left + cards-right --- */
+/* --- Section: navy field; a flex row of intro column | cards | (rating line
+   wraps to a full-width row below). The section's direct children are the
+   wrappers (intro default-content, cards-review-wrapper, rating default-content). */
 main .section.cards-review-container {
-  background-color: #004579;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
   margin: 0;
-  padding: 40px 0;
+
+  /* full-bleed navy; content centered within 1200px via symmetric padding */
+  padding: 40px max(24px, calc((100% - 1200px) / 2));
+  background-color: #004579;
 }
 
+/* Neutralize the global `main > .section > div { max-width; margin:auto }` on
+   the flex-item wrappers so they lay out in the flex row (margin:auto in a flex
+   row would otherwise absorb the free space and break the layout). */
 main .section.cards-review-container > div {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
-/* Intro column (heading + copy + button) */
-main .section.cards-review-container .default-content-wrapper {
+/* Intro column: heading + copy + orange button (the FIRST default-content). */
+main .section.cards-review-container .default-content-wrapper:first-child {
   color: #fff;
   text-align: center;
 }
 
-main .section.cards-review-container .default-content-wrapper h2 {
+main .section.cards-review-container .default-content-wrapper:first-child h2 {
   margin: 0 0 16px;
   color: #fff;
   font-size: 36px;
   font-weight: 500;
   line-height: 1.2;
-  text-align: center;
 }
 
-main .section.cards-review-container .default-content-wrapper p {
+main .section.cards-review-container .default-content-wrapper:first-child p {
   margin: 0 0 20px;
   color: #fff;
   font-size: 14px;
   line-height: 1.5;
-  text-align: center;
 }
 
-/* Orange "View All Reviews" button */
-main .section.cards-review-container .default-content-wrapper a,
-main .section.cards-review-container .default-content-wrapper a:any-link {
+/* Orange "View All Reviews" button — scoped to the intro only. */
+main .section.cards-review-container .default-content-wrapper:first-child a,
+main .section.cards-review-container .default-content-wrapper:first-child a:any-link {
   display: inline-block;
   padding: 10px 16px;
   border-radius: 2px;
@@ -60,11 +69,11 @@ main .section.cards-review-container .default-content-wrapper a:any-link {
   white-space: nowrap;
 }
 
-main .section.cards-review-container .default-content-wrapper a::after {
+main .section.cards-review-container .default-content-wrapper:first-child a::after {
   content: none;
 }
 
-main .section.cards-review-container .default-content-wrapper a:hover {
+main .section.cards-review-container .default-content-wrapper:first-child a:hover {
   background-color: var(--brand-accent-hover, #cf6608);
   color: #fff;
 }
@@ -142,18 +151,31 @@ main .section.cards-review-container .default-content-wrapper a:hover {
   font-style: normal;
 }
 
-/* Trustpilot rating line below the cards (full-width, white, gold link). */
+/* Trustpilot rating line below the cards — full-width, centered, white text,
+   yellow "5,000+ reviews" link (NOT a button), small inline Trustpilot logo. */
+main .section.cards-review-container .default-content-wrapper:has(.cards-review-rating-line) {
+  flex: 1 1 100%;
+  text-align: center;
+}
+
 main .section.cards-review-container .cards-review-rating-line {
-  margin: 20px 0 0;
+  margin: 8px 0 0;
   color: #fff;
   font-size: 16px;
   line-height: 1.5;
+  text-align: center;
 }
 
+/* Yellow text link — override the intro's orange-button treatment. */
 main .section.cards-review-container .cards-review-rating-line a,
 main .section.cards-review-container .cards-review-rating-line a:any-link {
+  display: inline;
+  padding: 0;
+  border-radius: 0;
+  background: none;
   color: #f5dd8d;
-  text-decoration: none;
+  font-weight: 400;
+  text-decoration: underline;
   white-space: normal;
 }
 
@@ -161,12 +183,18 @@ main .section.cards-review-container .cards-review-rating-line a::after {
   content: none;
 }
 
+main .section.cards-review-container .cards-review-rating-line a:hover {
+  background: none;
+  color: #f5dd8d;
+}
+
+/* Small Trustpilot logo, inline after the text. */
 main .section.cards-review-container .cards-review-rating-line picture,
 main .section.cards-review-container .cards-review-rating-line img {
   display: inline-block;
-  height: 20px;
+  height: 14px;
   width: auto;
-  margin-left: 8px;
+  margin-left: 6px;
   vertical-align: middle;
 }
 
@@ -177,13 +205,6 @@ main .section.cards-review-container .cards-review-rating-line picture::before {
 
 /* --- Desktop: intro column left, three cards to the right, rating below --- */
 @media (width >= 900px) {
-  main .section.cards-review-container > div {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 32px;
-  }
-
   /* Intro column (first default-content wrapper) — vertically centered beside
      the cards, with the large "Reviews Are In" heading. */
   main .section.cards-review-container .default-content-wrapper:first-child {
@@ -198,12 +219,6 @@ main .section.cards-review-container .cards-review-rating-line picture::before {
 
   main .section.cards-review-container .cards-review-wrapper {
     flex: 1;
-  }
-
-  /* Rating line wrapper spans the full width on its own row below. */
-  main .section.cards-review-container .default-content-wrapper:has(.cards-review-rating-line) {
-    flex: 0 0 100%;
-    margin: 0;
   }
 
   .cards-review ul {
