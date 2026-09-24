@@ -422,26 +422,25 @@ var CustomImportScript = (() => {
     };
     const rows = [
       ["newsletter"],
-      [cell("placeholder", "Enter your email address")],
-      [cell("cta", "Sign Up")],
-      [cell("action", "/p/emailconnection-subscribe")]
+      [cell("cta", "Submit")],
+      [cell("action", "/p/emailconnection-subscribe")],
+      [cell("intro", "Don't Miss Out On Important Updates! Find out about the latest news, promotions, special offers and more.")],
+      [cell("footnote", "Save 5% off your first order. Sign up today & save!")]
     ];
     const block = WebImporter.DOMUtils.createTable(rows, document2);
     const frag = document2.createDocumentFragment();
+    const bgImg = element.querySelector("picture, img");
+    if (bgImg) {
+      const p = document2.createElement("p");
+      p.appendChild(bgImg.closest("picture") || bgImg);
+      frag.appendChild(p);
+    }
     const heading = element.querySelector("h1, h2, h3");
     if (heading) {
       const h = document2.createElement(heading.tagName.toLowerCase());
       h.textContent = heading.textContent.trim();
       frag.appendChild(h);
     }
-    element.querySelectorAll("p").forEach((p) => {
-      const text = p.textContent.replace(/\s+/g, " ").trim();
-      if (text && !p.querySelector("img, picture")) {
-        const np = document2.createElement("p");
-        np.textContent = text;
-        frag.appendChild(np);
-      }
-    });
     frag.appendChild(block);
     element.replaceWith(frag);
   }

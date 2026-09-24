@@ -11,7 +11,7 @@
  */
 function readConfig(block) {
   const config = {};
-  const order = ['cta', 'action'];
+  const order = ['cta', 'action', 'intro', 'footnote'];
   [...block.children].forEach((row, i) => {
     const cells = [...row.children];
     if (cells.length >= 2) {
@@ -43,8 +43,21 @@ function textField(name, placeholder, type = 'text') {
 }
 
 export default function decorate(block) {
-  const { cta = 'Submit', action = '/p/emailconnection-subscribe' } = readConfig(block);
+  const {
+    cta = 'Submit',
+    action = '/p/emailconnection-subscribe',
+    intro = '',
+    footnote = '',
+  } = readConfig(block);
   block.textContent = '';
+
+  // Intro copy above the form.
+  if (intro) {
+    const introP = document.createElement('p');
+    introP.className = 'newsletter-intro';
+    introP.textContent = intro;
+    block.append(introP);
+  }
 
   const form = document.createElement('form');
   form.className = 'newsletter-form';
@@ -90,4 +103,12 @@ export default function decorate(block) {
   });
 
   block.append(form);
+
+  // Footnote copy below the form.
+  if (footnote) {
+    const footP = document.createElement('p');
+    footP.className = 'newsletter-footnote';
+    footP.textContent = footnote;
+    block.append(footP);
+  }
 }

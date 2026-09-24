@@ -23,16 +23,9 @@
         {
           "component": "text",
           "valueType": "string",
-          "name": "placeholder",
-          "label": "Input Placeholder",
-          "value": "Enter your email address"
-        },
-        {
-          "component": "text",
-          "valueType": "string",
           "name": "cta",
           "label": "Button Label",
-          "value": "Sign Up"
+          "value": "Submit"
         },
         {
           "component": "text",
@@ -40,6 +33,20 @@
           "name": "action",
           "label": "Form Action URL",
           "value": "/p/emailconnection-subscribe"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "intro",
+          "label": "Intro Text (above form)",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "footnote",
+          "label": "Footnote Text (below form)",
+          "value": ""
         }
       ]
     }

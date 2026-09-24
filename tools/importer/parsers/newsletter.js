@@ -21,31 +21,33 @@ export default function parse(element, { document }) {
     div.append(p);
     return div;
   };
+  // Config, in fixed positional order: cta (submit label), action (URL),
+  // intro (text above the form), footnote (text below the form).
   const rows = [
     ['newsletter'],
-    [cell('placeholder', 'Enter your email address')],
-    [cell('cta', 'Sign Up')],
+    [cell('cta', 'Submit')],
     [cell('action', '/p/emailconnection-subscribe')],
+    [cell('intro', "Don't Miss Out On Important Updates! Find out about the latest news, promotions, special offers and more.")],
+    [cell('footnote', 'Save 5% off your first order. Sign up today & save!')],
   ];
   const block = WebImporter.DOMUtils.createTable(rows, document);
 
-  // Preserve the section's heading + copy (default content), then append the
-  // newsletter block below it — the source shows the form under the heading.
+  // Preserve the section's background image + heading as default content above
+  // the block. The intro/footnote copy is rendered by the block (above/below
+  // the form), so paragraphs are intentionally not duplicated here.
   const frag = document.createDocumentFragment();
+  const bgImg = element.querySelector('picture, img');
+  if (bgImg) {
+    const p = document.createElement('p');
+    p.appendChild(bgImg.closest('picture') || bgImg);
+    frag.appendChild(p);
+  }
   const heading = element.querySelector('h1, h2, h3');
   if (heading) {
     const h = document.createElement(heading.tagName.toLowerCase());
     h.textContent = heading.textContent.trim();
     frag.appendChild(h);
   }
-  element.querySelectorAll('p').forEach((p) => {
-    const text = p.textContent.replace(/\s+/g, ' ').trim();
-    if (text && !p.querySelector('img, picture')) {
-      const np = document.createElement('p');
-      np.textContent = text;
-      frag.appendChild(np);
-    }
-  });
   frag.appendChild(block);
   element.replaceWith(frag);
 }

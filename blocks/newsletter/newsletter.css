@@ -75,6 +75,19 @@ main .section.newsletter-container .default-content-wrapper p {
   padding: 0 24px;
 }
 
+/* Intro copy above the form, footnote below — both white + centered. */
+.newsletter .newsletter-intro,
+.newsletter .newsletter-footnote {
+  margin: 0 0 16px;
+  color: #fff;
+  text-align: center;
+}
+
+.newsletter .newsletter-footnote {
+  margin: 16px 0 0;
+  font-weight: 600;
+}
+
 .newsletter .newsletter-form {
   display: flex;
   flex-direction: column;
