@@ -123,8 +123,9 @@ main .section.cards-category-container .default-content-wrapper h2 {
   margin: 0 0 24px;
   color: #374151;
   font-size: 26px;
-  font-weight: 500;
+  font-weight: 700;
   line-height: 1.2;
+  text-align: left;
 }
 
 @media (width >= 900px) {
