@@ -12,11 +12,17 @@
  *
  * Usage: node tools/package/build-aem-package.mjs
  */
-import { readFile, writeFile, mkdir, rm, readdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm, readdir, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { deflateRawSync, crc32 } from 'node:zlib';
+import { createRequire } from 'node:module';
+
+// jsdom (CommonJS) from the content-import toolchain, for package-only DOM fixes.
+const { JSDOM } = createRequire(
+  '/home/node/.excat-marketplaces/excat-marketplace/excat/skills/excat-content-import/scripts/package.json',
+)('jsdom');
 
 /**
  * Minimal ZIP writer (deflate) — used when the `zip` binary is unavailable.
@@ -103,15 +109,58 @@ const PKG_GROUP = 'compliancesigns';
 const PKG_NAME = 'compliancesigns-content';
 const PKG_VERSION = '1.0.0';
 
-// Real pages + fragments to include (QA preview scaffolds excluded).
-const PAGES = [
-  { html: 'content/index.plain.html', jcrPath: 'index', title: 'Home' },
-  { html: 'content/pd/oneok-spottters-rerquired-sign-cs949629.plain.html', jcrPath: 'pd/oneok-spottters-rerquired-sign-cs949629', title: 'Spotter Required When Backing Sign for ONEOK' },
-  { html: 'content/products/safety-labels.plain.html', jcrPath: 'products/safety-labels', title: 'Safety Labels' },
-  { html: 'content/c/chemical-hazard-safety-signs.plain.html', jcrPath: 'c/chemical-hazard-safety-signs', title: 'Chemical Safety Signs & Labels' },
-  { html: 'content/nav.plain.html', jcrPath: 'nav', title: 'Navigation' },
-  { html: 'content/footer.plain.html', jcrPath: 'footer', title: 'Footer' },
-];
+const CONTENT_DIR = 'content';
+
+/**
+ * Every page in the preview: all *.plain.html under content/ (recursively),
+ * mapped to a JCR path under SITE_ROOT. Discovered at build time so new pages
+ * are packaged automatically.
+ */
+async function discoverPages() {
+  const pages = [];
+  const walk = async (dir) => {
+    const entries = await readdir(path.join(WORKSPACE, dir), { withFileTypes: true });
+    for (const ent of entries) {
+      const rel = path.join(dir, ent.name);
+      // readdir reports a symlinked subdir as a symlink; follow it via stat.
+      const isDir = ent.isDirectory()
+        || (ent.isSymbolicLink() && (await stat(path.join(WORKSPACE, rel))).isDirectory());
+      if (isDir) {
+        if (ent.name !== 'images') await walk(rel);
+      } else if (ent.name.endsWith('.plain.html')) {
+        const jcrPath = path.relative(CONTENT_DIR, rel)
+          .replace(/\.plain\.html$/, '')
+          .split(path.sep)
+          .join('/');
+        pages.push({ html: rel, jcrPath });
+      }
+    }
+  };
+  await walk(CONTENT_DIR);
+  return pages.sort((a, b) => a.jcrPath.localeCompare(b.jcrPath));
+}
+
+/**
+ * Local images (content/images/*) -> their original source URLs. md2jcr drops
+ * relative image paths, so without this the header/footer logos vanish from
+ * the package. Every other image on the site already uses its source URL.
+ */
+const IMAGE_SOURCES = {
+  'compliance-signs-logo.png': 'https://media.compliancesigns.com/media/homepage/compliance-signs-logo-new.png',
+  'logo-footer.png': 'https://media.compliancesigns.com/media/wysiwyg/logo-footer.png',
+  'trustpilot.png': 'https://www.compliancesigns.com/images/trustpilot.png',
+};
+
+/** Package-only: rewrite src="images/x.png" to the image's source URL. */
+function absolutizeLocalImages(html) {
+  const unmapped = [];
+  const out = html.replace(/src="(?:\.\/|\/content\/)?images\/([^"]+)"/g, (match, file) => {
+    if (IMAGE_SOURCES[file]) return `src="${IMAGE_SOURCES[file]}"`;
+    unmapped.push(file);
+    return match;
+  });
+  return { html: out, unmapped };
+}
 
 const DIST = path.join(WORKSPACE, 'tools/package/dist');
 const STAGE = path.join(DIST, PKG_NAME);
@@ -131,52 +180,67 @@ const noopLog = {
 };
 
 /**
- * Package-only: inside each tabs-industry tab, keep the featured banner image
- * (the one following the `field:content_image` hint) and drop the product-card
- * thumbnails. md2jcr maps one image per richtext field, so multiple images in a
- * repeating item's richtext break JCR conversion. The rendered site keeps all
- * images — this transform runs only on the package payload, never on disk.
+ * Package-only: normalize every tabs-industry block into the shape the
+ * tabs-industry-item model expects — per tab: title | content_image (the one
+ * featured banner) + content_richtext (text/links only). md2jcr maps a single
+ * image per richtext field, so product thumbnails are dropped. Handles both the
+ * field-hinted homepage markup and older un-hinted nested-div markup. The
+ * rendered site keeps every image; this runs on the package payload only.
  */
-function stripTabsIndustryThumbnails(html) {
-  const start = html.indexOf('class="tabs-industry"');
-  if (start === -1) return html;
-  // The tabs-industry block is a self-contained top-level section <div>. Find its
-  // bounds by walking div depth from the opening tag.
-  const openTagStart = html.lastIndexOf('<div', start);
-  let depth = 0;
-  let end = html.length;
-  const tagRe = /<\/?div\b[^>]*>/g;
-  tagRe.lastIndex = openTagStart;
-  let m = tagRe.exec(html);
-  while (m) {
-    if (m[0].startsWith('</')) depth -= 1;
-    else depth += 1;
-    if (depth === 0) { end = m.index + m[0].length; break; }
-    m = tagRe.exec(html);
-  }
-  const before = html.slice(0, openTagStart);
-  let block = html.slice(openTagStart, end);
-  const after = html.slice(end);
+/**
+ * Package-only: md2jcr turns a link that wraps only an image into a button
+ * component and discards the image (the header/footer logos came through as an
+ * empty link to "/"). Unwrap such links so the image survives as an image; the
+ * header/footer blocks re-link their logo to the homepage at runtime.
+ */
+function unwrapImageLinks(html) {
+  if (!/<a\b[^>]*>\s*(?:<picture|<img)/.test(html)) return html;
+  const { document } = new JSDOM(`<body>${html}</body>`).window;
+  document.querySelectorAll('a').forEach((a) => {
+    const onlyImage = a.children.length === 1
+      && a.firstElementChild.matches('picture, img')
+      && !a.textContent.trim();
+    if (onlyImage) a.replaceWith(a.firstElementChild);
+  });
+  return document.body.innerHTML;
+}
 
-  // Within each tab's content cell, the first image (featured banner) sits right
-  // after `field:content_image`; all later images are product thumbnails. Remove
-  // <p>…<picture/img>…</p> wrappers that are NOT the featured banner.
-  // Split on the content_image hint so the banner in each tab is preserved.
-  const parts = block.split('<!-- field:content_image -->');
-  block = parts.map((part, idx) => {
-    if (idx === 0) return part; // before the first tab's banner
-    // The banner picture is the first <picture>…</picture> in this segment; keep
-    // it, then strip any subsequent <p> that wraps a picture/img (product thumbs).
-    const firstPicEnd = part.indexOf('</picture>');
-    if (firstPicEnd === -1) return part;
-    const head = part.slice(0, firstPicEnd + '</picture>'.length);
-    let tail = part.slice(firstPicEnd + '</picture>'.length);
-    // Remove <p> blocks in the tail that contain an image.
-    tail = tail.replace(/<p>\s*<picture>[\s\S]*?<\/picture>\s*<\/p>/g, '');
-    return head + tail;
-  }).join('<!-- field:content_image -->');
+function normalizeTabsIndustry(html) {
+  if (!html.includes('tabs-industry')) return html;
+  const { document } = new JSDOM(`<body>${html}</body>`).window;
+  document.querySelectorAll('div.tabs-industry').forEach((block) => {
+    [...block.children].forEach((row) => {
+      const cells = [...row.children];
+      if (cells.length < 2) return;
+      const title = cells[0].textContent.replace(/\s+/g, ' ').trim();
+      const content = cells.slice(1);
+      const banner = content.map((c) => c.querySelector('picture')).find(Boolean);
+      // Text/link blocks in document order, excluding anything holding an image.
+      const textEls = [];
+      content.forEach((c) => c.querySelectorAll('p, h1, h2, h3, h4, h5, h6').forEach((el) => {
+        if (!el.querySelector('picture, img') && el.textContent.trim()) textEls.push(el.cloneNode(true));
+      }));
 
-  return before + block + after;
+      const titleCell = document.createElement('div');
+      titleCell.append(document.createComment(' field:title '));
+      const tp = document.createElement('p');
+      tp.textContent = title;
+      titleCell.append(tp);
+
+      const contentCell = document.createElement('div');
+      if (banner) {
+        contentCell.append(document.createComment(' field:content_image '));
+        const bp = document.createElement('p');
+        bp.append(banner.cloneNode(true));
+        contentCell.append(bp);
+      }
+      contentCell.append(document.createComment(' field:content_richtext '));
+      textEls.forEach((el) => contentCell.append(el));
+
+      row.replaceChildren(titleCell, contentCell);
+    });
+  });
+  return document.body.innerHTML;
 }
 
 async function main() {
@@ -198,14 +262,20 @@ async function main() {
   const filterRoots = [];
 
   const failures = [];
-  for (const page of PAGES) {
+  const pages = await discoverPages();
+  console.log(`Found ${pages.length} page(s) in ${CONTENT_DIR}/\n`);
+  for (const page of pages) {
     let raw = await readFile(path.join(WORKSPACE, page.html), 'utf-8');
-    // Package-only transform: md2jcr maps a repeating item's richtext to a single
-    // image field, so the tabs-industry per-tab product THUMBNAILS (which the
-    // rendered site keeps) must be dropped for JCR — the featured banner image
-    // stays. This does NOT modify the on-disk content; it only affects the
-    // package payload so the block round-trips into the Universal Editor model.
-    raw = stripTabsIndustryThumbnails(raw);
+    // Package-only: relink local images (logos) to their source URLs.
+    const abs = absolutizeLocalImages(raw);
+    raw = abs.html;
+    if (abs.unmapped.length) {
+      console.log(`⚠️  ${page.html}: no source URL for local image(s) ${abs.unmapped.join(', ')} — add to IMAGE_SOURCES`);
+    }
+    // Package-only: reshape tabs-industry to its UE model, and keep linked
+    // images (logos) as images (see function docs).
+    raw = normalizeTabsIndustry(raw);
+    raw = unwrapImageLinks(raw);
     // Wrap the plain fragment so html2md finds a <main>.
     const doc = `<!DOCTYPE html><html><body><main>${raw}</main></body></html>`;
     const md = await html2md(doc, {

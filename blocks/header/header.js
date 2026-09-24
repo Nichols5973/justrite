@@ -62,7 +62,15 @@ export default async function decorate(block) {
     if (logoP) {
       const logoWrap = document.createElement('div');
       logoWrap.className = 'nav-logo';
-      logoWrap.append(logoP.querySelector('a') || logoP);
+      let logoLink = logoP.querySelector('a');
+      if (!logoLink) {
+        // AEM content stores the logo as a plain image; link it to the homepage.
+        logoLink = document.createElement('a');
+        logoLink.href = '/';
+        logoLink.setAttribute('aria-label', 'Home');
+        logoLink.append(...logoP.childNodes);
+      }
+      logoWrap.append(logoLink);
       brand.append(logoWrap);
     }
   }
