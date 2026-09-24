@@ -108,7 +108,7 @@ const HTML2MD_DIR = '/home/node/.excat-marketplaces/excat-marketplace/excat/tool
 const SITE_ROOT = '/content/justrite';
 const PKG_GROUP = 'compliancesigns';
 const PKG_NAME = 'compliancesigns-content';
-const PKG_VERSION = '1.1.0';
+const PKG_VERSION = '1.2.0';
 
 const CONTENT_DIR = 'content';
 
