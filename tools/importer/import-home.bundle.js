@@ -184,6 +184,7 @@ var CustomImportScript = (() => {
   }
 
   // tools/importer/parsers/tabs-industry.js
+  var PRODUCT_SLOTS = 4;
   var STATIC_TABS = [
     {
       title: "Manufacturing",
@@ -233,43 +234,50 @@ var CustomImportScript = (() => {
       const titleP = document2.createElement("p");
       titleP.textContent = tab.title;
       titleCell.appendChild(titleP);
-      const contentCell = document2.createDocumentFragment();
+      const featuredCell = document2.createDocumentFragment();
       const img = document2.createElement("img");
       img.src = tab.bannerImg;
       img.alt = tab.bannerAlt;
-      contentCell.appendChild(document2.createComment(" field:content_image "));
-      contentCell.appendChild(img);
-      contentCell.appendChild(document2.createComment(" field:content_richtext "));
+      featuredCell.appendChild(document2.createComment(" field:featured_image "));
+      featuredCell.appendChild(img);
+      featuredCell.appendChild(document2.createComment(" field:featured_text "));
       const shopAll = document2.createElement("a");
       shopAll.href = tab.shopAllHref;
       shopAll.textContent = "Shop All";
       const shopAllP = document2.createElement("p");
       shopAllP.appendChild(shopAll);
-      contentCell.appendChild(shopAllP);
-      tab.products.forEach((product) => {
-        const pImg = document2.createElement("p");
-        const productImg = document2.createElement("img");
-        productImg.src = product.img;
-        productImg.alt = product.alt;
-        pImg.appendChild(productImg);
-        contentCell.appendChild(pImg);
-        const priceP = document2.createElement("p");
-        priceP.textContent = product.price;
-        contentCell.appendChild(priceP);
-        const h = document2.createElement("h3");
-        const a = document2.createElement("a");
-        a.href = product.href;
-        a.textContent = product.title;
-        h.appendChild(a);
-        contentCell.appendChild(h);
-        const selectP = document2.createElement("p");
-        const selectA = document2.createElement("a");
-        selectA.href = product.href;
-        selectA.textContent = "Select Options";
-        selectP.appendChild(selectA);
-        contentCell.appendChild(selectP);
-      });
-      cells.push([titleCell, contentCell]);
+      featuredCell.appendChild(shopAllP);
+      const productCells = [];
+      for (let i = 0; i < PRODUCT_SLOTS; i += 1) {
+        const product = tab.products[i];
+        const cell = document2.createDocumentFragment();
+        if (product) {
+          const n = i + 1;
+          cell.appendChild(document2.createComment(` field:product${n}_image `));
+          const productImg = document2.createElement("img");
+          productImg.src = product.img;
+          productImg.alt = product.alt;
+          cell.appendChild(productImg);
+          cell.appendChild(document2.createComment(` field:product${n}_text `));
+          const priceP = document2.createElement("p");
+          priceP.textContent = product.price;
+          cell.appendChild(priceP);
+          const h = document2.createElement("h3");
+          const a = document2.createElement("a");
+          a.href = product.href;
+          a.textContent = product.title;
+          h.appendChild(a);
+          cell.appendChild(h);
+          const selectP = document2.createElement("p");
+          const selectA = document2.createElement("a");
+          selectA.href = product.href;
+          selectA.textContent = "Select Options";
+          selectP.appendChild(selectA);
+          cell.appendChild(selectP);
+        }
+        productCells.push(cell);
+      }
+      cells.push([titleCell, featuredCell, ...productCells]);
     });
     const block = WebImporter.Blocks.createBlock(document2, { name: "tabs-industry", cells });
     const heading = element.querySelector("h1, h2, h3");
@@ -308,15 +316,14 @@ var CustomImportScript = (() => {
     const cells = [];
     STATIC_REVIEWS.forEach((review) => {
       const imageCell = document2.createDocumentFragment();
-      imageCell.appendChild(document2.createComment(" field:image "));
-      const ratingP = document2.createElement("p");
-      ratingP.textContent = review.rating;
-      imageCell.appendChild(ratingP);
       const textCell = document2.createDocumentFragment();
       textCell.appendChild(document2.createComment(" field:text "));
       const h = document2.createElement("h3");
       h.textContent = review.title;
       textCell.appendChild(h);
+      const ratingP = document2.createElement("p");
+      ratingP.textContent = review.rating;
+      textCell.appendChild(ratingP);
       const quoteP = document2.createElement("p");
       quoteP.textContent = review.quote;
       textCell.appendChild(quoteP);
@@ -505,10 +512,13 @@ var CustomImportScript = (() => {
         "#hs-web-interactives-floating-container",
         "#hs-interactives-modal-overlay",
         '[id^="hs-web-interactives-"]',
-        // UserWay accessibility widget
+        // UserWay accessibility widget (incl. its injected skip-link buttons:
+        // "Skip to main content" / "Enable accessibility for low vision")
         "#userwayAccessibilityIcon",
         ".uwy",
-        "#uw-open-accessibility"
+        "#uw-open-accessibility",
+        ".uw-sl",
+        '[id^="uw-skip"]'
       ]);
     }
     if (hookName === TransformHook.afterTransform) {
@@ -528,6 +538,23 @@ var CustomImportScript = (() => {
         "noscript",
         "link"
       ]);
+      const TRACKING_PIXELS = [
+        'img[src*="bat.bing.com"]',
+        'img[src*="facebook.com/tr"]',
+        'img[src*="doubleclick.net"]',
+        'img[src*="googleadservices.com"]',
+        'img[src*="google-analytics.com"]',
+        'img[src*="px.ads.linkedin.com"]'
+      ];
+      element.querySelectorAll(TRACKING_PIXELS.join(",")).forEach((img) => {
+        let parent = img.parentElement;
+        img.remove();
+        while (parent && parent !== element && !parent.textContent.trim() && !parent.querySelector("img, picture, video, iframe")) {
+          const next = parent.parentElement;
+          parent.remove();
+          parent = next;
+        }
+      });
     }
   }
 

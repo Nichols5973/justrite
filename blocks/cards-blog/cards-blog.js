@@ -19,6 +19,10 @@ export default function decorate(block) {
     // First card is the large featured article (left); the rest stack (right).
     if (cardIndex === 0) li.classList.add('cards-blog-featured');
     while (row.firstElementChild) li.append(row.firstElementChild);
+    // Drop empty extra cells (e.g. an unset CTA Style field in AEM).
+    [...li.children].slice(1).forEach((div) => {
+      if (!div.textContent.trim() && !div.querySelector('picture, img')) div.remove();
+    });
 
     [...li.children].forEach((div, index) => {
       if (index === 0) {

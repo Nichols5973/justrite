@@ -108,7 +108,7 @@ const HTML2MD_DIR = '/home/node/.excat-marketplaces/excat-marketplace/excat/tool
 const SITE_ROOT = '/content/justrite';
 const PKG_GROUP = 'compliancesigns';
 const PKG_NAME = 'compliancesigns-content';
-const PKG_VERSION = '1.2.0';
+const PKG_VERSION = '1.3.0';
 
 const CONTENT_DIR = 'content';
 
@@ -300,14 +300,6 @@ const noopLog = {
 };
 
 /**
- * Package-only: normalize every tabs-industry block into the shape the
- * tabs-industry-item model expects — per tab: title | content_image (the one
- * featured banner) + content_richtext (text/links only). md2jcr maps a single
- * image per richtext field, so product thumbnails are dropped. Handles both the
- * field-hinted homepage markup and older un-hinted nested-div markup. The
- * rendered site keeps every image; this runs on the package payload only.
- */
-/**
  * Package-only: md2jcr turns a link that wraps only an image into a button
  * component and discards the image (the header/footer logos came through as an
  * empty link to "/"). Unwrap such links so the image survives as an image; the
@@ -325,39 +317,85 @@ function unwrapImageLinks(html) {
   return document.body.innerHTML;
 }
 
+/**
+ * Package-only: upgrade older tabs-industry markup (a single content cell, or
+ * un-hinted nested divs) to the tabs-industry-item model — title | featured
+ * image + text | product1..4 image + text — so every product keeps its own
+ * image in AEM (a rich-text field holds at most one). Rows already in that
+ * shape (field-hinted featured_image) pass through unchanged.
+ */
+/**
+ * Package-only: md2jcr wraps headings inside rich-text values in a paragraph
+ * (<p><h3>…</h3></p>). That is invalid HTML; browsers split it into empty
+ * paragraphs around the heading, adding stray spacing in AEM. Unwrap them in
+ * the (XML-escaped) rich-text attribute values.
+ */
+function unwrapRichtextHeadings(xml) {
+  return xml
+    .replace(
+      /&lt;p&gt;\s*(&lt;(h[1-6])(?:(?!&gt;)[\s\S])*&gt;[\s\S]*?&lt;\/\2&gt;)\s*&lt;\/p&gt;/g,
+      '$1',
+    )
+    // md2jcr also drops the <p> around a paragraph that is entirely bold
+    // (<p>A</p><strong>B</strong>); put it back.
+    .replace(
+      /(text="|&lt;\/p&gt;)(&lt;strong&gt;(?:(?!&lt;\/?p&gt;)[^"])*?&lt;\/strong&gt;)(?=&lt;p&gt;|")/g,
+      '$1&lt;p&gt;$2&lt;/p&gt;',
+    );
+}
+
+const TABS_PRODUCT_SLOTS = 4;
+
 function normalizeTabsIndustry(html) {
   if (!html.includes('tabs-industry')) return html;
   const { document } = new JSDOM(`<body>${html}</body>`).window;
   document.querySelectorAll('div.tabs-industry').forEach((block) => {
     [...block.children].forEach((row) => {
+      if (row.innerHTML.includes('field:featured_image')) return;
       const cells = [...row.children];
       if (cells.length < 2) return;
       const title = cells[0].textContent.replace(/\s+/g, ' ').trim();
-      const content = cells.slice(1);
-      const banner = content.map((c) => c.querySelector('picture')).find(Boolean);
-      // Text/link blocks in document order, excluding anything holding an image.
-      const textEls = [];
-      content.forEach((c) => c.querySelectorAll('p, h1, h2, h3, h4, h5, h6').forEach((el) => {
-        if (!el.querySelector('picture, img') && el.textContent.trim()) textEls.push(el.cloneNode(true));
+
+      // Text/image blocks in document order; a new group starts at each image.
+      // The first group is the featured tile, the rest are products.
+      const groups = [];
+      cells.slice(1).forEach((c) => c.querySelectorAll('p, h1, h2, h3, h4, h5, h6').forEach((el) => {
+        const pic = el.querySelector('picture, img');
+        if (pic || !groups.length) groups.push({ image: null, text: [] });
+        const group = groups[groups.length - 1];
+        if (pic && !group.image) group.image = pic.closest('picture') || pic;
+        else if (!pic && el.textContent.trim()) group.text.push(el);
       }));
 
-      const titleCell = document.createElement('div');
-      titleCell.append(document.createComment(' field:title '));
-      const tp = document.createElement('p');
-      tp.textContent = title;
-      titleCell.append(tp);
+      const cell = (fields) => {
+        const div = document.createElement('div');
+        fields.forEach(([name, nodes]) => {
+          div.append(document.createComment(` field:${name} `));
+          nodes.forEach((n) => div.append(n.cloneNode(true)));
+        });
+        return div;
+      };
+      const imageNodes = (g) => {
+        if (!g?.image) return [];
+        const p = document.createElement('p');
+        p.append(g.image.cloneNode(true));
+        return [p];
+      };
 
-      const contentCell = document.createElement('div');
-      if (banner) {
-        contentCell.append(document.createComment(' field:content_image '));
-        const bp = document.createElement('p');
-        bp.append(banner.cloneNode(true));
-        contentCell.append(bp);
+      const titleP = document.createElement('p');
+      titleP.textContent = title;
+      const [featured, ...products] = groups;
+      const out = [
+        cell([['title', [titleP]]]),
+        cell([['featured_image', imageNodes(featured)], ['featured_text', featured?.text || []]]),
+      ];
+      for (let i = 0; i < TABS_PRODUCT_SLOTS; i += 1) {
+        const g = products[i];
+        out.push(g
+          ? cell([[`product${i + 1}_image`, imageNodes(g)], [`product${i + 1}_text`, g.text]])
+          : document.createElement('div'));
       }
-      contentCell.append(document.createComment(' field:content_richtext '));
-      textEls.forEach((el) => contentCell.append(el));
-
-      row.replaceChildren(titleCell, contentCell);
+      row.replaceChildren(...out);
     });
   });
   return document.body.innerHTML;
@@ -411,6 +449,8 @@ async function main() {
       console.log(`✗ ${page.html} — ${e.message.split('\n')[0]}`);
       continue;
     }
+
+    xml = unwrapRichtextHeadings(xml);
 
     // Repoint source-site images at their packaged DAM assets.
     xml = xml.replace(EXTERNAL_IMAGE, (url) => {

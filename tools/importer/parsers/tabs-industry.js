@@ -12,9 +12,13 @@
  * so the homepage renders complete and self-contained. Authors can later edit
  * or extend the tabs in the editor.
  *
- * xwalk item model (tabs-industry-item): title (cell 1), plus the grouped
- * content_* fields in cell 2 — content_image and content_richtext.
+ * xwalk item model (tabs-industry-item), one cell per field group:
+ *   title | featured_image + featured_text (Shop All) |
+ *   product1_image + product1_text | ... | product4_image + product4_text
+ * Each product gets its own image field (rich text holds one image at most).
+ * Unused product slots are emitted as empty cells.
  */
+const PRODUCT_SLOTS = 4;
 const STATIC_TABS = [
   {
     title: 'Manufacturing',
@@ -68,57 +72,58 @@ export default function parse(element, { document }) {
     titleP.textContent = tab.title;
     titleCell.appendChild(titleP);
 
-    // Cell 2: grouped content_* fields.
-    const contentCell = document.createDocumentFragment();
-
-    // content_image: the featured industry banner image.
+    // Cell 2: featured_* group — industry banner + "Shop All" CTA.
+    const featuredCell = document.createDocumentFragment();
     const img = document.createElement('img');
     img.src = tab.bannerImg;
     img.alt = tab.bannerAlt;
-    contentCell.appendChild(document.createComment(' field:content_image '));
-    contentCell.appendChild(img);
-
-    // content_richtext: featured "Shop All" CTA + representative product cards.
-    contentCell.appendChild(document.createComment(' field:content_richtext '));
-
+    featuredCell.appendChild(document.createComment(' field:featured_image '));
+    featuredCell.appendChild(img);
+    featuredCell.appendChild(document.createComment(' field:featured_text '));
     const shopAll = document.createElement('a');
     shopAll.href = tab.shopAllHref;
     shopAll.textContent = 'Shop All';
     const shopAllP = document.createElement('p');
     shopAllP.appendChild(shopAll);
-    contentCell.appendChild(shopAllP);
+    featuredCell.appendChild(shopAllP);
 
-    // Product cards: image + price + title + "Select Options" CTA (matches the
-    // live site's per-industry product row). The block JS regroups these flat
-    // richtext siblings into cards for rendering.
-    tab.products.forEach((product) => {
-      const pImg = document.createElement('p');
-      const productImg = document.createElement('img');
-      productImg.src = product.img;
-      productImg.alt = product.alt;
-      pImg.appendChild(productImg);
-      contentCell.appendChild(pImg);
+    // Cells 3-6: productN_* groups — image + price, title link, Select Options
+    // (matches the live site's per-industry product row).
+    const productCells = [];
+    for (let i = 0; i < PRODUCT_SLOTS; i += 1) {
+      const product = tab.products[i];
+      const cell = document.createDocumentFragment();
+      if (product) {
+        const n = i + 1;
+        cell.appendChild(document.createComment(` field:product${n}_image `));
+        const productImg = document.createElement('img');
+        productImg.src = product.img;
+        productImg.alt = product.alt;
+        cell.appendChild(productImg);
 
-      const priceP = document.createElement('p');
-      priceP.textContent = product.price;
-      contentCell.appendChild(priceP);
+        cell.appendChild(document.createComment(` field:product${n}_text `));
+        const priceP = document.createElement('p');
+        priceP.textContent = product.price;
+        cell.appendChild(priceP);
 
-      const h = document.createElement('h3');
-      const a = document.createElement('a');
-      a.href = product.href;
-      a.textContent = product.title;
-      h.appendChild(a);
-      contentCell.appendChild(h);
+        const h = document.createElement('h3');
+        const a = document.createElement('a');
+        a.href = product.href;
+        a.textContent = product.title;
+        h.appendChild(a);
+        cell.appendChild(h);
 
-      const selectP = document.createElement('p');
-      const selectA = document.createElement('a');
-      selectA.href = product.href;
-      selectA.textContent = 'Select Options';
-      selectP.appendChild(selectA);
-      contentCell.appendChild(selectP);
-    });
+        const selectP = document.createElement('p');
+        const selectA = document.createElement('a');
+        selectA.href = product.href;
+        selectA.textContent = 'Select Options';
+        selectP.appendChild(selectA);
+        cell.appendChild(selectP);
+      }
+      productCells.push(cell);
+    }
 
-    cells.push([titleCell, contentCell]);
+    cells.push([titleCell, featuredCell, ...productCells]);
   });
 
   const block = WebImporter.Blocks.createBlock(document, { name: 'tabs-industry', cells });
