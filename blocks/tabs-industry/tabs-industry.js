@@ -67,42 +67,54 @@ export default function decorate(block) {
       heading.remove();
     }
 
-    // The panel body arrives as a flat run of <p>/<h3> siblings (richtext
-    // flattens the authored structure). Regroup it into a featured tile
-    // followed by product cards so the CSS can lay them out side-by-side.
-    // A new group starts at each element containing an image.
-    const bodyWrap = tabpanel.querySelector(':scope > div') || tabpanel;
-    const nodes = [...bodyWrap.children];
-    if (nodes.length) {
-      const groups = [];
+    // Build the featured tile + product cards. Current content has one cell per
+    // field group (featured, product1..4), so each non-empty cell is a card.
+    // Older content has a single cell holding a flat run of <p>/<h3> siblings;
+    // there a new card starts at each element containing an image.
+    const cells = [...tabpanel.children];
+    const groups = [];
+    const newCard = () => {
+      const card = document.createElement('div');
+      card.className = 'tabs-industry-card';
+      groups.push(card);
+      return card;
+    };
+    if (cells.length > 1) {
+      cells.forEach((cell) => {
+        const hasContent = cell.textContent.trim() || cell.querySelector('picture, img');
+        if (hasContent) newCard().append(...cell.childNodes);
+      });
+    } else if (cells.length) {
       let current = null;
-      nodes.forEach((node) => {
-        const isImage = !!node.querySelector('picture, img');
-        if (isImage) {
-          current = document.createElement('div');
-          current.className = 'tabs-industry-card';
-          groups.push(current);
-        }
-        if (!current) {
-          current = document.createElement('div');
-          current.className = 'tabs-industry-card';
-          groups.push(current);
+      [...cells[0].children].forEach((node) => {
+        if (!current || node.querySelector('picture, img') || node.matches('picture, img')) {
+          current = newCard();
         }
         current.append(node);
       });
+    }
+    if (groups.length) {
+      // Drop whitespace text nodes and empty paragraphs (AEM rich text wraps
+      // headings in <p>, which the parser splits into empty siblings).
+      groups.forEach((card) => {
+        [...card.childNodes].forEach((n) => {
+          const emptyText = n.nodeType === Node.TEXT_NODE && !n.textContent.trim();
+          const emptyP = n.nodeType === Node.ELEMENT_NODE && n.tagName === 'P'
+            && !n.textContent.trim() && !n.querySelector('picture, img');
+          if (emptyText || emptyP) n.remove();
+        });
+      });
 
-      if (groups.length) {
-        // First group is the featured industry tile.
-        const featured = groups[0];
-        featured.classList.add('tabs-industry-featured');
-        // Overlay the industry name on the featured tile (matches source).
-        const label = document.createElement('span');
-        label.className = 'tabs-industry-featured-label';
-        label.textContent = item.labelText;
-        featured.append(label);
-        // The featured tile's link is the filled "Shop All" CTA.
-        featured.querySelectorAll('a').forEach((a) => a.classList.add('tabs-industry-shop-all'));
-      }
+      // First group is the featured industry tile.
+      const featured = groups[0];
+      featured.classList.add('tabs-industry-featured');
+      // Overlay the industry name on the featured tile (matches source).
+      const label = document.createElement('span');
+      label.className = 'tabs-industry-featured-label';
+      label.textContent = item.labelText;
+      featured.append(label);
+      // The featured tile's link is the filled "Shop All" CTA.
+      featured.querySelectorAll('a').forEach((a) => a.classList.add('tabs-industry-shop-all'));
 
       // Tag the "From $X" price line in each product card for styling.
       groups.slice(1).forEach((card) => {
@@ -116,8 +128,8 @@ export default function decorate(block) {
       const row = document.createElement('div');
       row.className = 'tabs-industry-cards';
       groups.forEach((g) => row.append(g));
-      bodyWrap.textContent = '';
-      bodyWrap.append(row);
+      tabpanel.textContent = '';
+      tabpanel.append(row);
     }
   });
 

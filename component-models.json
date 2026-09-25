@@ -6794,20 +6794,111 @@
         "valueType": "string",
         "name": "title",
         "value": "",
-        "label": "Tab Title"
+        "label": "Tab Name"
       },
       {
         "component": "reference",
         "valueType": "string",
-        "name": "content_image",
+        "name": "featured_image",
         "label": "Featured Image",
         "multi": false
       },
       {
-        "component": "richtext",
-        "name": "content_richtext",
+        "component": "text",
+        "valueType": "string",
+        "name": "featured_imageAlt",
         "value": "",
-        "label": "Content",
+        "label": "Featured Image Alt Text"
+      },
+      {
+        "component": "richtext",
+        "name": "featured_text",
+        "value": "",
+        "label": "Featured Link (Shop All)",
+        "valueType": "string"
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "product1_image",
+        "label": "Product 1 Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "product1_imageAlt",
+        "value": "",
+        "label": "Product 1 Image Alt Text"
+      },
+      {
+        "component": "richtext",
+        "name": "product1_text",
+        "value": "",
+        "label": "Product 1 Details (price, title link, Select Options)",
+        "valueType": "string"
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "product2_image",
+        "label": "Product 2 Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "product2_imageAlt",
+        "value": "",
+        "label": "Product 2 Image Alt Text"
+      },
+      {
+        "component": "richtext",
+        "name": "product2_text",
+        "value": "",
+        "label": "Product 2 Details (price, title link, Select Options)",
+        "valueType": "string"
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "product3_image",
+        "label": "Product 3 Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "product3_imageAlt",
+        "value": "",
+        "label": "Product 3 Image Alt Text"
+      },
+      {
+        "component": "richtext",
+        "name": "product3_text",
+        "value": "",
+        "label": "Product 3 Details (price, title link, Select Options)",
+        "valueType": "string"
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "product4_image",
+        "label": "Product 4 Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "product4_imageAlt",
+        "value": "",
+        "label": "Product 4 Image Alt Text"
+      },
+      {
+        "component": "richtext",
+        "name": "product4_text",
+        "value": "",
+        "label": "Product 4 Details (price, title link, Select Options)",
         "valueType": "string"
       }
     ]

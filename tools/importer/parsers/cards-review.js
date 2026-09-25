@@ -38,20 +38,21 @@ export default function parse(element, { document }) {
   const cells = [];
 
   STATIC_REVIEWS.forEach((review) => {
-    // Image cell (field:image) — star rating rendered as text.
+    // Image cell (field:image) — left empty: an image field can't hold the
+    // text star rating (AEM drops it), so the stars live in the text below.
     const imageCell = document.createDocumentFragment();
-    imageCell.appendChild(document.createComment(' field:image '));
-    const ratingP = document.createElement('p');
-    ratingP.textContent = review.rating;
-    imageCell.appendChild(ratingP);
 
-    // Text cell (field:text) — headline, quote, and reviewer name.
+    // Text cell (field:text) — headline, star rating, quote, reviewer name.
     const textCell = document.createDocumentFragment();
     textCell.appendChild(document.createComment(' field:text '));
 
     const h = document.createElement('h3');
     h.textContent = review.title;
     textCell.appendChild(h);
+
+    const ratingP = document.createElement('p');
+    ratingP.textContent = review.rating;
+    textCell.appendChild(ratingP);
 
     const quoteP = document.createElement('p');
     quoteP.textContent = review.quote;

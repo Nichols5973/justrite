@@ -33,10 +33,13 @@ export default function transform(hookName, element, payload) {
       '#hs-web-interactives-floating-container',
       '#hs-interactives-modal-overlay',
       '[id^="hs-web-interactives-"]',
-      // UserWay accessibility widget
+      // UserWay accessibility widget (incl. its injected skip-link buttons:
+      // "Skip to main content" / "Enable accessibility for low vision")
       '#userwayAccessibilityIcon',
       '.uwy',
       '#uw-open-accessibility',
+      '.uw-sl',
+      '[id^="uw-skip"]',
     ]);
   }
 
@@ -58,5 +61,26 @@ export default function transform(hookName, element, payload) {
       'noscript',
       'link',
     ]);
+
+    // Analytics tracking pixels (e.g. Bing UET <img src="https://bat.bing.com/action/...">)
+    // injected into the page body. They are not content, and in AEM an image
+    // outside the DAM renders as link text. Drop them and any wrapper left empty.
+    const TRACKING_PIXELS = [
+      'img[src*="bat.bing.com"]',
+      'img[src*="facebook.com/tr"]',
+      'img[src*="doubleclick.net"]',
+      'img[src*="googleadservices.com"]',
+      'img[src*="google-analytics.com"]',
+      'img[src*="px.ads.linkedin.com"]',
+    ];
+    element.querySelectorAll(TRACKING_PIXELS.join(',')).forEach((img) => {
+      let parent = img.parentElement;
+      img.remove();
+      while (parent && parent !== element && !parent.textContent.trim() && !parent.querySelector('img, picture, video, iframe')) {
+        const next = parent.parentElement;
+        parent.remove();
+        parent = next;
+      }
+    });
   }
 }

@@ -17,6 +17,10 @@ export default function decorate(block) {
     const li = document.createElement('li');
     moveInstrumentation(row, li);
     while (row.firstElementChild) li.append(row.firstElementChild);
+    // Drop empty extra cells (e.g. an unset CTA Style field in AEM).
+    [...li.children].slice(1).forEach((div) => {
+      if (!div.textContent.trim() && !div.querySelector('picture, img')) div.remove();
+    });
 
     [...li.children].forEach((div, index) => {
       if (index === 0) {

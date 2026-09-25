@@ -165,7 +165,11 @@ main .section.cards-review-container .default-content-wrapper:has(picture) {
   text-align: center;
 }
 
+/* Inline paragraphs: in AEM the logo arrives as its own paragraph after the
+   sentence; inline flow keeps it on the same line (as on the live site). */
 main .section.cards-review-container .default-content-wrapper:has(picture) p {
+  display: inline;
+  margin: 0;
   color: #fff;
   text-align: center;
 }
