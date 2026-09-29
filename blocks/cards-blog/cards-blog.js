@@ -1,5 +1,6 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
+import { extractCtaStyle } from '../../scripts/card-utils.js';
 
 /**
  * cards-blog — editorial article cards.
@@ -16,6 +17,7 @@ export default function decorate(block) {
   [...block.children].forEach((row, cardIndex) => {
     const li = document.createElement('li');
     moveInstrumentation(row, li);
+    extractCtaStyle(row); // CTA Style isn't used by this variant
     // First card is the large featured article (left); the rest stack (right).
     if (cardIndex === 0) li.classList.add('cards-blog-featured');
     while (row.firstElementChild) li.append(row.firstElementChild);

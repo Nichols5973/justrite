@@ -1,5 +1,6 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
+import { extractCtaStyle } from '../../scripts/card-utils.js';
 
 /**
  * cards-product — product listing cards.
@@ -16,6 +17,9 @@ export default function decorate(block) {
   [...block.children].forEach((row) => {
     const li = document.createElement('li');
     moveInstrumentation(row, li);
+    // CTA Style: Primary (default) keeps the outlined tile button.
+    const ctaStyle = extractCtaStyle(row);
+    if (ctaStyle && ctaStyle !== 'button') li.classList.add(`cta-${ctaStyle}`);
     while (row.firstElementChild) li.append(row.firstElementChild);
     // Drop empty extra cells (e.g. an unset CTA Style field in AEM).
     [...li.children].slice(1).forEach((div) => {

@@ -160,6 +160,32 @@
   text-decoration: none;
 }
 
+/* CTA Style: Secondary Button — solid accent fill, outlined on hover. */
+.cards-product li.cta-button-secondary .cards-product-body a.button:any-link {
+  border-color: var(--main-accent-color);
+  background-color: var(--main-accent-color);
+  color: var(--text-light);
+}
+
+.cards-product li.cta-button-secondary .cards-product-body a.button:hover,
+.cards-product li.cta-button-secondary .cards-product-body a.button:focus {
+  background-color: transparent;
+  color: var(--main-accent-color);
+}
+
+/* CTA Style: Dark Button — dark outline and text, dark fill on hover. */
+.cards-product li.cta-button-dark .cards-product-body a.button:any-link {
+  border-color: var(--dark-color);
+  color: var(--dark-color);
+}
+
+.cards-product li.cta-button-dark .cards-product-body a.button:hover,
+.cards-product li.cta-button-dark .cards-product-body a.button:focus {
+  border-color: var(--dark-color);
+  background-color: var(--dark-color);
+  color: var(--text-light);
+}
+
 @media (width >= 600px) {
   .cards-product ul {
     grid-template-columns: repeat(2, 1fr);

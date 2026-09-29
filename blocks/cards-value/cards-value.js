@@ -1,5 +1,6 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
+import { extractCtaStyle } from '../../scripts/card-utils.js';
 
 /**
  * cards-value — value-proposition items.
@@ -16,6 +17,7 @@ export default function decorate(block) {
   [...block.children].forEach((row) => {
     const li = document.createElement('li');
     moveInstrumentation(row, li);
+    extractCtaStyle(row); // CTA Style isn't used by this variant
     while (row.firstElementChild) li.append(row.firstElementChild);
     // Drop empty extra cells (e.g. an unset CTA Style field in AEM).
     [...li.children].slice(1).forEach((div) => {
