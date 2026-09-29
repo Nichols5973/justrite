@@ -1,5 +1,6 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
+import { extractCtaStyle } from '../../scripts/card-utils.js';
 
 /**
  * cards-category — compact category navigation tiles.
@@ -17,6 +18,7 @@ export default function decorate(block) {
   [...block.children].forEach((row) => {
     const li = document.createElement('li');
     moveInstrumentation(row, li);
+    extractCtaStyle(row); // CTA Style isn't used by this variant
 
     let linkUrl = '';
     const cells = [...row.children];

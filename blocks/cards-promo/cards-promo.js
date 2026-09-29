@@ -1,5 +1,6 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
+import { extractCtaStyle } from '../../scripts/card-utils.js';
 
 /**
  * cards-promo — promotional banner tiles.
@@ -17,6 +18,7 @@ export default function decorate(block) {
   [...block.children].forEach((row) => {
     const li = document.createElement('li');
     moveInstrumentation(row, li);
+    extractCtaStyle(row); // CTA Style isn't used by this variant
 
     // Optional trailing cell holding the tile-level link URL.
     let linkUrl = '';
